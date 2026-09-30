@@ -462,7 +462,7 @@ Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy, me]]) => {
     ringScene(), blobScene(), mfccScene(),
     kafa ? imageScene(kafa, 240, (r, g, b, a) => a > .5 && lumOf(r, g, b) > .6, (r, g, b, ty) => mixc(O, O2, ty)) : textScene("KAFA"),
     chompy ? imageScene(chompy, 230, (r, g, b) => sat(r, g, b) > .4 && lumOf(r, g, b) > .22, boost) : textScene("CHOMPY"),
-    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5), portraitColor, (x, y) => y < .68 ? 6 : 1, .035) : starScene(),
+    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5) && !(g > r + .04 && g > b + .04), portraitColor, (x, y) => y < .52 ? 6 : 1, .035) : starScene(),
     textScene("SAY HI")
   ];
   resize();
