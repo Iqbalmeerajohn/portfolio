@@ -247,3 +247,11 @@ main{touch-action:pan-y pinch-zoom}
 .enter .btn{height:50px}
 .enter-quiet{background:none;border:0;color:var(--mute);font:500 14.5px var(--body);cursor:pointer;padding:10px 4px;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--dim)}
 .enter-quiet:hover{color:var(--bone)}
+
+/* journey: the particle portrait sits right on laptops, above the text on phones */
+.journey .timeline,.journey .big,.journey .portrait-cap{max-width:min(760px,54vw)}
+.portrait-cap{margin-top:-24px}
+@media (max-width:900px){
+  .journey{padding-top:58vh}
+  .journey .timeline,.journey .big,.journey .portrait-cap{max-width:none}
+}

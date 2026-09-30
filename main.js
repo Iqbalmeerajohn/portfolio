@@ -20,7 +20,7 @@ const $$ = s => [...document.querySelectorAll(s)];
    ===================================================================== */
 const boot = { target: 0, shown: 0, live: true };
 const bootNum = $("#bootNum"), bootBar = $("#bootBar"), logLines = $$("#bootLog li");
-const TASKS = 5; let done = 0;
+const TASKS = 6; let done = 0;
 const tick = () => { done++; boot.target = Math.max(boot.target, done / TASKS); };
 gsap.ticker.add(() => {
   if (!boot.live) return;
@@ -69,6 +69,14 @@ const BONE = hex("#ece8dc"), MARI = hex("#f2b134");
 const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 const sat = (r, g, b) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b); return mx === 0 ? 0 : (mx - mn) / mx; };
 const lumOf = (r, g, b) => 0.3 * r + 0.59 * g + 0.11 * b;
+// portrait colours: skin keeps its warmth, the black shirt and hair lift to a visible slate
+const SLATE = [.36, .43, .62], BONE_P = [.93, .91, .86];
+function portraitColor(r, g, b) {
+  const lum = lumOf(r, g, b), s = sat(r, g, b);
+  if (r > b + .04 && s > .18) return [Math.min(1, r * 1.4 + .06), Math.min(1, g * 1.35 + .05), Math.min(1, b * 1.3 + .05)];
+  const v = (.42 + .58 * Math.pow(lum, .7)) * 1.55;
+  return mixc(SLATE, BONE_P, lum).map(c => Math.min(1, c * v));
+}
 const boost = (r, g, b) => [Math.min(1, r * 1.25 + .07), Math.min(1, g * 1.25 + .07), Math.min(1, b * 1.25 + .07)];
 
 function fromCandidates(cand, step, zDepth, colorOf) {
@@ -95,16 +103,18 @@ function textScene(txt) {
   for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (d[(y * W + x) * 4 + 3] > 128) cand.push(x, y, 0, 0, 0);
   return fromCandidates(cand, 2, 0, () => Math.random() < .16 ? MARI : mixc(BONE, [1, 1, 1], Math.random() * .3));
 }
-function imageScene(img, sampleW, keep, colorFn) {
+function imageScene(img, sampleW, keep, colorFn, weight, depth = .12) {
   const w = sampleW, h = Math.round(sampleW * img.naturalHeight / img.naturalWidth);
   const c = document.createElement("canvas"); c.width = w; c.height = h;
   const g = c.getContext("2d"); g.drawImage(img, 0, 0, w, h);
   const d = g.getImageData(0, 0, w, h).data, cand = [];
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = (y * w + x) * 4, r = d[i] / 255, gg = d[i + 1] / 255, b = d[i + 2] / 255, a = d[i + 3] / 255;
-    if (keep(r, gg, b, a, x / w, y / h)) cand.push(x, y, r, gg, b);
+    if (!keep(r, gg, b, a, x / w, y / h)) continue;
+    const reps = weight ? weight(x / w, y / h) : 1;
+    for (let k = 0; k < reps; k++) cand.push(x, y, r, gg, b);
   }
-  return fromCandidates(cand, 1, 0.12, colorFn);
+  return fromCandidates(cand, 1, depth, colorFn);
 }
 function build(fn) { const pos = new Float32Array(N * 3), col = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const [p, c] = fn(i); pos.set(p, i * 3); col.set(c, i * 3); } return { pos, col }; }
 const rndSphere = r => { const u = Math.random() * 2 - 1, th = Math.random() * 6.283, s = Math.sqrt(1 - u * u); return [Math.cos(th) * s * r, u * r, Math.sin(th) * s * r]; };
@@ -274,7 +284,7 @@ const cfg = [
   { tint: "#1d1850", scale: () => mobile ? visW * .95 : visH * .72, off: () => workOff(5, .235), rot: "terrain", wave: 1, ry: .3 },
   { tint: "#3a1a06", scale: () => visH * (mobile ? .42 : .66), off: () => workOff(6), rot: "face" },
   { tint: "#3a0c2a", scale: () => mobile ? Math.min(visW * .95, visH * .45) : visH * .82, off: () => workOff(7), rot: "face" },
-  { tint: "#0d1633", scale: () => Math.max(visW, visH) * 1.15, off: () => [0, 0], rot: "drift" },
+  { tint: "#14203f", scale: () => mobile ? visW * .82 : visH * .74, off: () => mobile ? [0, visH * .22] : [visW * .24, visH * .04], rot: "face", ry: .45 },
   { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .92 : .6), visH * 2.2), off: () => [0, visH * (mobile ? .26 : .22)], rot: "face", ry: .17 }
 ];
 const tints = cfg.map(c => new THREE.Color(c.tint));
@@ -441,9 +451,9 @@ function adapt() {
 /* =====================================================================
    BUILD, THEN OPEN
    ===================================================================== */
-const imgs = Promise.all([loadImg("assets/saree-1.webp"), loadImg("assets/kafa-logo.png"), loadImg("assets/chompy-art.webp"),
+const imgs = Promise.all([loadImg("assets/saree-1.webp"), loadImg("assets/kafa-logo.png"), loadImg("assets/chompy-art.webp"), loadImg("assets/me-portrait.webp"),
   new Promise(r => setTimeout(() => { tick(); r(); }, 1400))]);
-Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy]]) => {
+Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy, me]]) => {
   singular = singularity();
   const O = hex("#ffb347"), O2 = hex("#ff6a1a");
   scenes = [
@@ -452,7 +462,8 @@ Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy]]) => {
     ringScene(), blobScene(), mfccScene(),
     kafa ? imageScene(kafa, 240, (r, g, b, a) => a > .5 && lumOf(r, g, b) > .6, (r, g, b, ty) => mixc(O, O2, ty)) : textScene("KAFA"),
     chompy ? imageScene(chompy, 230, (r, g, b) => sat(r, g, b) > .4 && lumOf(r, g, b) > .22, boost) : textScene("CHOMPY"),
-    starScene(), textScene("SAY HI")
+    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5), portraitColor, (x, y) => y < .55 ? 6 : 1, .035) : starScene(),
+    textScene("SAY HI")
   ];
   resize();
   if (renderer) gsap.ticker.add(frame);

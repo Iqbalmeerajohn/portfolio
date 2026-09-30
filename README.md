@@ -14,7 +14,7 @@ One Three.js particle system (16,000 points, 9,000 on phones) runs behind the wh
 | Speech Emotion Recognition | a live 120 x 94 MFCC grid, the model's real input shape, rippling like audio | grid + height wave in the shader |
 | KAFA | KAFA's raccoon logo | pixels sampled from the logo |
 | CHOMPY | the gummy bear hero art | saturation-filtered screenshot |
-| Journey | a drifting starfield | random volume |
+| Journey | a portrait of me | photo cut out with rembg, skin tones kept, dark clothes lifted to slate, extra particles on the face |
 | Contact | SAY HI | text |
 
 How it works: each particle carries two target positions and colours (`pA/pB`, `cA/cB`). Scroll position picks the pair and a blend `uT`. Each particle has its own delay and burst direction, so shapes explode and re-form instead of crossfading.
