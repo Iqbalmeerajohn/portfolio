@@ -3,6 +3,12 @@ import * as THREE from "three";
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const mobile = matchMedia("(max-width: 900px)").matches;
+const coarse = matchMedia("(pointer: coarse)").matches;
+const weak = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+// tier 0 = phone / weak device, 1 = tablet, 2 = laptop / desktop
+const TIER = mobile || (coarse && weak) ? 0 : coarse || weak ? 1 : 2;
+document.documentElement.classList.add("tier-" + TIER);
+ScrollTrigger.config({ ignoreMobileResize: true });
 gsap.registerPlugin(ScrollTrigger);
 const EASE = "expo.out";
 const $ = s => document.querySelector(s);
@@ -54,7 +60,9 @@ $$('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
 /* =====================================================================
    PARTICLE SCENES (normalised: longest side = 1, centred)
    ===================================================================== */
-const N = mobile ? 9000 : 16000;
+const N = [6000, 10000, 16000][TIER];
+const PR_MAX = [1.25, 1.5, 1.75][TIER];
+document.querySelectorAll(".pcount").forEach(el => { el.textContent = N.toLocaleString("en-US"); });
 const hex = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
 const BONE = hex("#ece8dc"), MARI = hex("#f2b134");
 const mixc = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
@@ -136,7 +144,7 @@ const starScene = () => build(() => [[(Math.random() - .5) * 1.8, (Math.random()
    ===================================================================== */
 const canvas = $("#gl");
 let renderer = null;
-try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" }); renderer.autoClear = false; }
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance", stencil: false, depth: false }); renderer.autoClear = false; }
 catch (e) { canvas.style.display = "none"; }
 
 const VERT = /* glsl */`
@@ -213,7 +221,8 @@ void main(){
 }`;
 const DUST_FRAG = `void main(){ vec2 c = gl_PointCoord - .5; if (length(c) > .5) discard; gl_FragColor = vec4(.8, .82, .9, .22); }`;
 
-let camera, sceneMain, sceneBg, bgCam, material, geo, bgMat, dustMat;
+let camera, sceneMain, sceneBg, bgCam, material, geo, bgMat, dustMat, bgRT, sceneBlit, glLost = false;
+let prNow = PR_MAX, drawN = N, bgFrame = 0;
 if (renderer) {
   camera = new THREE.PerspectiveCamera(35, 1, 10, 5000); camera.position.z = 1000;
   sceneMain = new THREE.Scene(); sceneBg = new THREE.Scene(); bgCam = new THREE.Camera();
@@ -221,8 +230,15 @@ if (renderer) {
   bgMat = new THREE.ShaderMaterial({ vertexShader: BG_VERT, fragmentShader: BG_FRAG, depthTest: false, depthWrite: false,
     uniforms: { uTime: { value: 0 }, uTint: { value: new THREE.Color(0x2a2410) }, uRes: { value: new THREE.Vector2(1, 1) }, uScroll: { value: 0 } } });
   sceneBg.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat));
+  bgRT = new THREE.WebGLRenderTarget(64, 64, { depthBuffer: false, stencilBuffer: false });
+  sceneBlit = new THREE.Scene();
+  sceneBlit.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    vertexShader: BG_VERT, fragmentShader: "uniform sampler2D map; varying vec2 vUv; void main(){ gl_FragColor = texture2D(map, vUv); }",
+    uniforms: { map: { value: bgRT.texture } }, depthTest: false, depthWrite: false })));
+  canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); glLost = true; canvas.style.opacity = "0"; });
+  canvas.addEventListener("webglcontextrestored", () => { glLost = false; canvas.style.opacity = ""; curA = curB = -9; });
 
-  const DN = mobile ? 700 : 1600, dpos = new Float32Array(DN * 3), ds = new Float32Array(DN);
+  const DN = [500, 1000, 1600][TIER], dpos = new Float32Array(DN * 3), ds = new Float32Array(DN);
   for (let i = 0; i < DN; i++) { dpos.set([(Math.random() - .5) * 2600, (Math.random() - .5) * 1800, -300 - Math.random() * 1500], i * 3); ds[i] = Math.random(); }
   const dgeo = new THREE.BufferGeometry(); dgeo.setAttribute("position", new THREE.BufferAttribute(dpos, 3)); dgeo.setAttribute("s", new THREE.BufferAttribute(ds, 1));
   dustMat = new THREE.ShaderMaterial({ vertexShader: DUST_VERT, fragmentShader: DUST_FRAG, transparent: true, depthWrite: false,
@@ -236,7 +252,7 @@ if (renderer) {
   geo.setAttribute("rnd", new THREE.BufferAttribute(rnd, 4));
   geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(N * 3), 3));
   material = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false,
-    uniforms: { uT: { value: 0 }, uTime: { value: 0 }, uSize: { value: mobile ? 2.4 : 2.6 }, uPR: { value: 1 }, uBurst: { value: reduce ? 0 : 1 },
+    uniforms: { uT: { value: 0 }, uTime: { value: 0 }, uSize: { value: [2.9, 2.7, 2.6][TIER] }, uPR: { value: 1 }, uBurst: { value: reduce ? 0 : 1 },
       uSA: { value: 1 }, uSB: { value: 1 }, uOA: { value: new THREE.Vector3() }, uOB: { value: new THREE.Vector3() },
       uRA: { value: new THREE.Matrix3() }, uRB: { value: new THREE.Matrix3() }, uMouse: { value: new THREE.Vector2(9999, 9999) },
       uMouseR: { value: 0 }, uWA: { value: 0 }, uWB: { value: 0 }, uVel: { value: 0 } } });
@@ -250,7 +266,7 @@ const sideOf = i => secs[i]?.dataset.side === "right" ? -1 : 1;
 const workOff = (i, k = .2) => mobile ? [0, visH * .18] : [visW * k * sideOf(i), 0];
 const cfg = [
   { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .9 : .62), visH * 2.2), off: () => [0, visH * (mobile ? .2 : .14)], rot: "face" },
-  { tint: "#33260a", scale: () => mobile ? visW * .62 : visH * .56, off: () => mobile ? [0, visH * .3] : [visW * .28, visH * .04], rot: "spin" },
+  { tint: "#33260a", scale: () => mobile ? visW * .5 : visH * .56, off: () => mobile ? [0, visH * .33] : [visW * .28, visH * .04], rot: "spin" },
   { tint: "#3d0b1c", scale: () => visH * (mobile ? .48 : .86), off: () => workOff(2), rot: "face" },
   { tint: "#2e2508", scale: () => mobile ? visW * .95 : visH * .8, off: () => workOff(3), rot: "ring" },
   { tint: "#07342a", scale: () => mobile ? visW * .78 : visH * .62, off: () => workOff(4, .21), rot: "spin" },
@@ -298,11 +314,13 @@ function sceneAt(y) {
   const L = anchors.length - 1; return [L - 1, L, 1];
 }
 function resize() {
-  const w = innerWidth, h = innerHeight;
+  // the canvas box is 100lvh, so the phone address bar sliding in and out never changes it
+  const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
   if (renderer) {
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.setSize(w, h, false);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prNow)); renderer.setSize(w, h, false);
     const pr = renderer.getPixelRatio(); material.uniforms.uPR.value = pr; dustMat.uniforms.uPR.value = pr;
     bgMat.uniforms.uRes.value.set(w, h);
+    bgRT.setSize(Math.max(32, Math.round(w * .3)), Math.max(32, Math.round(h * .3)));
     camera.aspect = w / h; camera.updateProjectionMatrix();
   }
   visH = 2 * 1000 * Math.tan(THREE.MathUtils.degToRad(17.5)); visW = visH * (w / h);
@@ -384,8 +402,9 @@ function frame() {
     rail.forEach((r, i) => r.classList.toggle("on", i === active));
     if (!first) { setChord(active); swoosh(); }
   }
-  if (!renderer || !scenes.length) return;
+  if (!renderer || !scenes.length || glLost) return;
   setPair(a, b);
+  adapt();
   mouse.nx += (mouse.x - mouse.nx) * .06; mouse.ny += (mouse.y - mouse.ny) * .06;
   const dy = y - lastY; lastY = y;
   vel += ((Math.abs(dy) > 400 ? 0 : dy) - vel) * .12;
@@ -407,14 +426,41 @@ function frame() {
   bgMat.uniforms.uTime.value = reduce ? 0 : t; bgMat.uniforms.uScroll.value = sp;
   dustMat.uniforms.uScroll.value = sp; dustMat.uniforms.uTime.value = reduce ? 0 : t;
 
-  renderer.clear(); renderer.render(sceneBg, bgCam); renderer.render(sceneMain, camera);
+  // the nebula is soft, so it renders at 30% size (every other frame on phones) and is upscaled
+  if (TIER > 0 || (bgFrame++ & 1) === 0) { renderer.setRenderTarget(bgRT); renderer.render(sceneBg, bgCam); renderer.setRenderTarget(null); }
+  renderer.clear(); renderer.render(sceneBlit, bgCam); renderer.render(sceneMain, camera);
 }
+/* Mouse: particles follow the cursor and shapes tilt toward it.
+   Touch: particles react only while a finger is down and swiping sideways;
+   as soon as the browser starts scrolling (pointercancel / scroll) the effect lets go. */
+let fingerDown = false;
+const aim = e => { const nx = e.clientX / innerWidth * 2 - 1, ny = -(e.clientY / innerHeight * 2 - 1); mouse.wx = nx * visW / 2; mouse.wy = ny * visH / 2; return [nx, ny]; };
 addEventListener("pointermove", e => {
-  mouse.x = e.clientX / innerWidth * 2 - 1; mouse.y = -(e.clientY / innerHeight * 2 - 1);
-  mouse.wx = mouse.x * visW / 2; mouse.wy = mouse.y * visH / 2; mouse.active = 1;
+  if (e.pointerType === "mouse") { const [nx, ny] = aim(e); mouse.x = nx; mouse.y = ny; mouse.active = 1; }
+  else if (fingerDown) { aim(e); mouse.active = 1; }
 }, { passive: true });
+addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") { fingerDown = true; aim(e); mouse.active = 1; } }, { passive: true });
+const release = e => { if (e.pointerType !== "mouse") { fingerDown = false; mouse.active = 0; } };
+addEventListener("pointerup", release, { passive: true });
+addEventListener("pointercancel", release, { passive: true });
 document.addEventListener("pointerleave", () => { mouse.active = 0; });
-addEventListener("blur", () => { mouse.active = 0; });
+addEventListener("blur", () => { fingerDown = false; mouse.active = 0; });
+addEventListener("scroll", () => { if (fingerDown) { fingerDown = false; mouse.active = 0; } }, { passive: true });
+
+/* If a device can't hold ~45fps, shed resolution, then particles, until it can. */
+let aT = performance.now(), aFrames = 0, aSlow = 0;
+function adapt() {
+  const now = performance.now(); aFrames++;
+  if (now - aT < 1000) return;
+  const fps = aFrames * 1000 / (now - aT); aT = now; aFrames = 0;
+  if (document.hidden || intro.running) return;
+  aSlow = fps < 45 ? aSlow + 1 : 0;
+  if (aSlow >= 2) {
+    aSlow = 0;
+    if (prNow > 1) { prNow = Math.max(1, prNow - .25); resize(); }
+    else if (drawN > 3500) { drawN = Math.max(3500, Math.round(drawN * .75)); geo.setDrawRange(0, drawN); material.uniforms.uSize.value *= 1.08; }
+  }
+}
 
 /* =====================================================================
    BUILD, THEN OPEN
@@ -610,5 +656,13 @@ email.addEventListener("click", async () => {
   setTimeout(() => { tip.textContent = "Click to copy"; }, 2400);
 });
 
-let rT; addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => { resize(); ScrollTrigger.refresh(); }, 150); });
+let rT, lastW = innerWidth;
+addEventListener("resize", () => {
+  clearTimeout(rT);
+  rT = setTimeout(() => {
+    // phones fire resize when the address bar slides; only a real width change needs a relayout
+    if (coarse && innerWidth === lastW) return;
+    lastW = innerWidth; resize(); ScrollTrigger.refresh();
+  }, 200);
+});
 ScrollTrigger.addEventListener("refresh", computeAnchors);
