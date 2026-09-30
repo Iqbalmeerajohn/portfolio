@@ -252,6 +252,6 @@ main{touch-action:pan-y pinch-zoom}
 .journey .timeline,.journey .big,.journey .portrait-cap{max-width:min(760px,54vw)}
 .portrait-cap{margin-top:-24px}
 @media (max-width:900px){
-  .journey{padding-top:58vh}
+  .journey{padding-top:66vh}
   .journey .timeline,.journey .big,.journey .portrait-cap{max-width:none}
 }

@@ -284,7 +284,7 @@ const cfg = [
   { tint: "#1d1850", scale: () => mobile ? visW * .95 : visH * .72, off: () => workOff(5, .235), rot: "terrain", wave: 1, ry: .3 },
   { tint: "#3a1a06", scale: () => visH * (mobile ? .42 : .66), off: () => workOff(6), rot: "face" },
   { tint: "#3a0c2a", scale: () => mobile ? Math.min(visW * .95, visH * .45) : visH * .82, off: () => workOff(7), rot: "face" },
-  { tint: "#14203f", scale: () => mobile ? visW * .82 : visH * .74, off: () => mobile ? [0, visH * .22] : [visW * .24, visH * .04], rot: "face", ry: .45 },
+  { tint: "#14203f", scale: () => mobile ? visW * .78 : visH * .74, off: () => mobile ? [0, visH * .26] : [visW * .24, visH * .04], rot: "face", ry: .45 },
   { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .92 : .6), visH * 2.2), off: () => [0, visH * (mobile ? .26 : .22)], rot: "face", ry: .17 }
 ];
 const tints = cfg.map(c => new THREE.Color(c.tint));
@@ -462,7 +462,7 @@ Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy, me]]) => {
     ringScene(), blobScene(), mfccScene(),
     kafa ? imageScene(kafa, 240, (r, g, b, a) => a > .5 && lumOf(r, g, b) > .6, (r, g, b, ty) => mixc(O, O2, ty)) : textScene("KAFA"),
     chompy ? imageScene(chompy, 230, (r, g, b) => sat(r, g, b) > .4 && lumOf(r, g, b) > .22, boost) : textScene("CHOMPY"),
-    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5), portraitColor, (x, y) => y < .55 ? 6 : 1, .035) : starScene(),
+    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5), portraitColor, (x, y) => y < .68 ? 6 : 1, .035) : starScene(),
     textScene("SAY HI")
   ];
   resize();
