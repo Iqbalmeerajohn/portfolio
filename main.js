@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { createAudio } from "./audio.js";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -265,16 +266,16 @@ const secs = $$("[data-scene]");
 const sideOf = i => secs[i]?.dataset.side === "right" ? -1 : 1;
 const workOff = (i, k = .2) => mobile ? [0, visH * .18] : [visW * k * sideOf(i), 0];
 const cfg = [
-  { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .9 : .62), visH * 2.2), off: () => [0, visH * (mobile ? .2 : .14)], rot: "face" },
+  { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .9 : .62), visH * 2.2), off: () => [0, visH * (mobile ? .2 : .14)], rot: "face", ry: .17 },
   { tint: "#33260a", scale: () => mobile ? visW * .5 : visH * .56, off: () => mobile ? [0, visH * .33] : [visW * .28, visH * .04], rot: "spin" },
   { tint: "#3d0b1c", scale: () => visH * (mobile ? .48 : .86), off: () => workOff(2), rot: "face" },
   { tint: "#2e2508", scale: () => mobile ? visW * .95 : visH * .8, off: () => workOff(3), rot: "ring" },
   { tint: "#07342a", scale: () => mobile ? visW * .78 : visH * .62, off: () => workOff(4, .21), rot: "spin" },
-  { tint: "#1d1850", scale: () => mobile ? visW * .95 : visH * .72, off: () => workOff(5, .235), rot: "terrain", wave: 1 },
+  { tint: "#1d1850", scale: () => mobile ? visW * .95 : visH * .72, off: () => workOff(5, .235), rot: "terrain", wave: 1, ry: .3 },
   { tint: "#3a1a06", scale: () => visH * (mobile ? .42 : .66), off: () => workOff(6), rot: "face" },
   { tint: "#3a0c2a", scale: () => mobile ? Math.min(visW * .95, visH * .45) : visH * .82, off: () => workOff(7), rot: "face" },
   { tint: "#0d1633", scale: () => Math.max(visW, visH) * 1.15, off: () => [0, 0], rot: "drift" },
-  { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .92 : .6), visH * 2.2), off: () => [0, visH * (mobile ? .26 : .22)], rot: "face" }
+  { tint: "#2b2410", scale: () => Math.min(visW * (mobile ? .92 : .6), visH * 2.2), off: () => [0, visH * (mobile ? .26 : .22)], rot: "face", ry: .17 }
 ];
 const tints = cfg.map(c => new THREE.Color(c.tint));
 const introCfg = { scale: () => visH, off: () => [0, visH * (mobile ? .2 : .14)], rot: "drift" };
@@ -328,60 +329,22 @@ function resize() {
 }
 
 /* =====================================================================
-   SOUND: generated ambient pad, off until the visitor turns it on
+   SOUND (see audio.js). Browsers only allow audio after a click, so the
+   entrance button is the moment sound starts; "Enter silently" skips it.
    ===================================================================== */
-const ROOTS = [110, 98, 116.54, 87.31, 130.81, 103.83, 146.83, 123.47, 82.41, 110];
-const audio = { ctx: null, on: false, voices: [], master: null, filter: null };
-function startAudio() {
-  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
-  const ctx = audio.ctx || (audio.ctx = new AC());
-  if (!audio.master) {
-    const master = ctx.createGain(); master.gain.value = 0;
-    const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = 900; filter.Q.value = .6;
-    const delay = ctx.createDelay(1.5); delay.delayTime.value = .42;
-    const fb = ctx.createGain(); fb.gain.value = .32; const wet = ctx.createGain(); wet.gain.value = .35;
-    filter.connect(master); filter.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(master);
-    master.connect(ctx.destination);
-    [1, 1.5, 2.4, 3, 4.5].forEach((ratio, i) => {
-      const o = ctx.createOscillator(); o.type = i % 2 ? "triangle" : "sine";
-      o.detune.value = (Math.random() - .5) * 12;
-      const g = ctx.createGain(); g.gain.value = [.5, .28, .18, .12, .06][i];
-      const lfo = ctx.createOscillator(); lfo.frequency.value = .05 + Math.random() * .08; const lg = ctx.createGain(); lg.gain.value = g.gain.value * .45;
-      lfo.connect(lg); lg.connect(g.gain); lfo.start();
-      o.connect(g); g.connect(filter); o.start();
-      audio.voices.push({ o, ratio });
-    });
-    audio.master = master; audio.filter = filter;
-  }
-  ctx.resume();
-  setChord(railIdx < 0 ? 0 : railIdx, true);
-  audio.master.gain.cancelScheduledValues(ctx.currentTime);
-  audio.master.gain.setTargetAtTime(.09, ctx.currentTime, .8);
-  return true;
+const sfx = createAudio();
+const soundBtn = $("#sound"), soundLabel = soundBtn.querySelector(".sound-label");
+function reflectSound() {
+  soundBtn.setAttribute("aria-pressed", String(sfx.on));
+  soundLabel.textContent = sfx.on ? "Sound on" : "Sound off";
 }
-function stopAudio() { if (!audio.ctx) return; audio.master.gain.setTargetAtTime(0, audio.ctx.currentTime, .4); }
-function setChord(i, instant) {
-  if (!audio.ctx) return;
-  const r = ROOTS[i] || 110, now = audio.ctx.currentTime;
-  audio.voices.forEach(v => v.o.frequency.setTargetAtTime(r * v.ratio, now, instant ? .01 : .9));
-}
-function swoosh() {
-  if (!audio.on || !audio.ctx) return;
-  const ctx = audio.ctx, dur = .9, len = ctx.sampleRate * dur, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / len) ** 2;
-  const src = ctx.createBufferSource(); src.buffer = buf;
-  const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 1.4;
-  bp.frequency.setValueAtTime(300, ctx.currentTime); bp.frequency.exponentialRampToValueAtTime(2400, ctx.currentTime + dur);
-  const g = ctx.createGain(); g.gain.value = .05;
-  src.connect(bp); bp.connect(g); g.connect(ctx.destination); src.start();
-}
-const soundBtn = $("#sound");
 soundBtn.addEventListener("click", () => {
-  audio.on = !audio.on;
-  if (audio.on) { if (!startAudio()) audio.on = false; } else stopAudio();
-  soundBtn.setAttribute("aria-pressed", String(audio.on));
+  sfx.setOn(!sfx.on);
+  try { localStorage.setItem("iq-sound", sfx.on ? "on" : "off"); } catch (e) {}
+  reflectSound();
 });
-document.addEventListener("visibilitychange", () => { if (!audio.ctx) return; document.hidden ? audio.ctx.suspend() : audio.on && audio.ctx.resume(); });
+if (!sfx.supported) soundBtn.hidden = true;
+document.addEventListener("visibilitychange", () => { document.hidden ? sfx.suspend() : sfx.resume(); });
 
 /* =====================================================================
    RENDER LOOP
@@ -389,6 +352,7 @@ document.addEventListener("visibilitychange", () => { if (!audio.ctx) return; do
 const clock = new THREE.Clock();
 const intro = { t: 0, running: true };
 let railIdx = -1, vel = 0, lastY = 0;
+const shape = { x: 0, y: 0, rx: 0, ry: 0 };
 const rail = $$(".rail a");
 const tintNow = new THREE.Color(0x2b2410);
 function frame() {
@@ -400,7 +364,7 @@ function frame() {
   if (active !== railIdx) {
     const first = railIdx < 0; railIdx = active;
     rail.forEach((r, i) => r.classList.toggle("on", i === active));
-    if (!first) { setChord(active); swoosh(); }
+    if (!first) sfx.chapter(active); else sfx.chapter(active);
   }
   if (!renderer || !scenes.length || glLost) return;
   setPair(a, b);
@@ -418,6 +382,11 @@ function frame() {
   U.uVel.value = reduce ? 0 : Math.max(-24, Math.min(24, vel));
   U.uMouse.value.set(mouse.wx, mouse.wy);
   U.uMouseR.value += ((mouse.active ? visH * .13 : 0) - U.uMouseR.value) * .08;
+  sfx.scroll(intro.running ? 0 : vel);
+  // where the current shape sits on screen, so scrubbing it can make sound
+  const cur = T > .5 ? cB : cA, co = cur.off(), sc = cur.scale();
+  shape.x = (co[0] / visW + .5) * innerWidth; shape.y = (.5 - co[1] / visH) * innerHeight;
+  shape.rx = sc * .5 / visW * innerWidth; shape.ry = sc * (cur.ry || .5) / visH * innerHeight;
 
   const target = a < 0 ? tints[0] : tints[a].clone().lerp(tints[b], T);
   tintNow.lerp(target, .05);
@@ -435,11 +404,18 @@ function frame() {
    as soon as the browser starts scrolling (pointercancel / scroll) the effect lets go. */
 let fingerDown = false;
 const aim = e => { const nx = e.clientX / innerWidth * 2 - 1, ny = -(e.clientY / innerHeight * 2 - 1); mouse.wx = nx * visW / 2; mouse.wy = ny * visH / 2; return [nx, ny]; };
+let lastPX = 0, lastPY = 0;
+function scrubSound(e) {
+  const dx = e.clientX - lastPX, dy = e.clientY - lastPY; lastPX = e.clientX; lastPY = e.clientY;
+  if (intro.running) return;
+  const ex = (e.clientX - shape.x) / Math.max(1, shape.rx), ey = (e.clientY - shape.y) / Math.max(1, shape.ry);
+  if (ex * ex + ey * ey <= 1.1) sfx.scrub(Math.hypot(dx, dy), e.clientX / innerWidth);
+}
 addEventListener("pointermove", e => {
-  if (e.pointerType === "mouse") { const [nx, ny] = aim(e); mouse.x = nx; mouse.y = ny; mouse.active = 1; }
-  else if (fingerDown) { aim(e); mouse.active = 1; }
+  if (e.pointerType === "mouse") { const [nx, ny] = aim(e); mouse.x = nx; mouse.y = ny; mouse.active = 1; scrubSound(e); }
+  else if (fingerDown) { aim(e); mouse.active = 1; scrubSound(e); }
 }, { passive: true });
-addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") { fingerDown = true; aim(e); mouse.active = 1; } }, { passive: true });
+addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") { fingerDown = true; aim(e); mouse.active = 1; lastPX = e.clientX; lastPY = e.clientY; } }, { passive: true });
 const release = e => { if (e.pointerType !== "mouse") { fingerDown = false; mouse.active = 0; } };
 addEventListener("pointerup", release, { passive: true });
 addEventListener("pointercancel", release, { passive: true });
@@ -500,7 +476,24 @@ function open() {
       .add(() => $("#boot").remove(), "<1.1")
       .add(heroIn, "<1.2");
   };
-  const wait = () => boot.shown >= 1 ? gsap.delayedCall(.35, go) : gsap.delayedCall(.1, wait);
+  const enter = $("#enter"), withSound = $("#enterSound"), silent = $("#enterSilent");
+  let pref = "on"; try { pref = localStorage.getItem("iq-sound") || "on"; } catch (e) {}
+  if (pref === "off") { withSound.querySelector("span").textContent = "Enter"; silent.querySelector("span").textContent = "Enter with sound"; }
+  const choose = soundOn => {
+    enter.querySelectorAll("button").forEach(b => b.disabled = true);
+    if (soundOn && sfx.supported) sfx.start();
+    reflectSound();
+    go();
+    sfx.intro(.75);
+  };
+  withSound.addEventListener("click", () => choose(pref !== "off"));
+  silent.addEventListener("click", () => choose(pref === "off"));
+  const wait = () => {
+    if (boot.shown < 1) return gsap.delayedCall(.1, wait);
+    enter.hidden = false;
+    gsap.fromTo(enter, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .7, ease: EASE });
+    withSound.focus({ preventScroll: true });
+  };
   wait();
 }
 
@@ -537,7 +530,7 @@ function scramble(el) {
 function heroIn() {
   if (reduce) return;
   gsap.timeline()
-    .from(".nav", { y: -30, opacity: 0, duration: 1, ease: EASE })
+    .fromTo(".nav", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: EASE })
     .add(() => scramble($(".hero .eyebrow")), "<")
     .from(".hero .w > span", { yPercent: 115, duration: 1.2, stagger: .045, ease: EASE }, "<.1")
     .from([".hero .lede", ".hero .ctas", ".hint", ".rail"], { opacity: 0, y: 18, duration: 1, stagger: .08, ease: EASE }, "-=.9");
@@ -630,7 +623,12 @@ track.innerHTML += track.innerHTML;
 
 // nav hides on the way down
 const nav = $("#nav");
-ScrollTrigger.create({ start: 0, end: "max", onUpdate: s => nav.classList.toggle("hide", s.direction === 1 && s.scroll() > 500) });
+let navHidden = false;
+const setNav = hide => {
+  if (hide === navHidden) return; navHidden = hide;
+  gsap.to(nav, { y: hide ? -120 : 0, opacity: hide ? 0 : 1, duration: .4, ease: "power3.out", overwrite: "auto" });
+};
+ScrollTrigger.create({ start: 0, end: "max", onUpdate: s => setNav(s.direction === 1 && s.scroll() > 100) });
 
 // tilt + magnetic
 if (fine && !reduce) {
@@ -640,6 +638,7 @@ if (fine && !reduce) {
     el.addEventListener("pointermove", e => { const r = el.getBoundingClientRect(); ry(((e.clientX - r.left) / r.width - .5) * 12); rx(-((e.clientY - r.top) / r.height - .5) * 9); });
     el.addEventListener("pointerleave", () => { rx(0); ry(0); });
   });
+  $$(".btn, .nav-cta, .email, .links a").forEach(el => el.addEventListener("pointerenter", () => sfx.hover()));
   $$(".magnetic").forEach(el => {
     const x = gsap.quickTo(el, "x", { duration: .5, ease: "elastic.out(1, .4)" }), y = gsap.quickTo(el, "y", { duration: .5, ease: "elastic.out(1, .4)" });
     el.addEventListener("pointermove", e => { const r = el.getBoundingClientRect(); x((e.clientX - r.left - r.width / 2) * .25); y((e.clientY - r.top - r.height / 2) * .35); });

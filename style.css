@@ -55,8 +55,7 @@ main{position:relative;z-index:2}
   width:min(1100px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:9px 9px 9px 20px;border:1px solid var(--line);border-radius:999px;
   background:rgb(7 11 22 / .55);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);
-  transition:transform .35s var(--ease-out)}
-.nav.hide{transform:translateY(calc(-100% - 24px))}
+}
 .brand{font:600 20px var(--display);text-decoration:none}
 .brand span{color:var(--mari)}
 .nav nav{display:flex;align-items:center;gap:4px}
@@ -238,3 +237,10 @@ main{touch-action:pan-y pinch-zoom}
   .hint{display:block;right:auto;left:var(--gutter);bottom:auto;top:calc(env(safe-area-inset-top,0px) + 82px)}
   .hint-mouse{display:none}.hint-touch{display:inline}
 }
+
+/* entrance */
+.enter{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:22px}
+.enter[hidden]{display:none!important}
+.enter .btn{height:50px}
+.enter-quiet{background:none;border:0;color:var(--mute);font:500 14.5px var(--body);cursor:pointer;padding:10px 4px;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--dim)}
+.enter-quiet:hover{color:var(--bone)}

@@ -19,7 +19,7 @@
 <body class="is-booting">
 
 <!-- BOOT: counts real asset loading, then wipes away -->
-<div class="boot" id="boot" aria-hidden="true">
+<div class="boot" id="boot">
   <div class="boot-half boot-top"></div>
   <div class="boot-half boot-bottom"></div>
   <div class="boot-inner">
@@ -27,6 +27,10 @@
       <p class="boot-label">Booting Iqbal.OS</p>
       <p class="boot-count"><span id="bootNum">000</span></p>
       <div class="boot-bar"><i id="bootBar"></i></div>
+      <div class="enter" id="enter" hidden>
+        <button class="btn btn-solid" id="enterSound" type="button"><span>Enter with sound</span></button>
+        <button class="enter-quiet" id="enterSilent" type="button"><span>Enter silently</span></button>
+      </div>
     </div>
     <ol class="boot-log" id="bootLog">
       <li data-at="0.05">mounting memory engine</li>
@@ -51,7 +55,7 @@
   <nav aria-label="Primary">
     <a href="#work-saree">Work</a>
     <a href="#journey">Experience</a>
-    <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Ambient sound"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound</span></button>
+    <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Ambient sound"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound off</span></button>
     <a href="#contact" class="nav-cta">Email me</a>
   </nav>
 </header>
