@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { createAudio } from "./audio.js?v=8c04236e4f";
+import { createAudio } from "./audio.js?v=d75e5fab3d";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -477,8 +477,6 @@ function open() {
       .add(heroIn, "<1.2");
   };
   const enter = $("#enter"), withSound = $("#enterSound"), silent = $("#enterSilent");
-  let pref = "on"; try { pref = localStorage.getItem("iq-sound") || "on"; } catch (e) {}
-  if (pref === "off") { withSound.querySelector("span").textContent = "Enter"; silent.querySelector("span").textContent = "Enter with sound"; }
   const choose = soundOn => {
     enter.querySelectorAll("button").forEach(b => b.disabled = true);
     if (soundOn && sfx.supported) sfx.start();
@@ -486,8 +484,8 @@ function open() {
     go();
     sfx.intro(.75);
   };
-  withSound.addEventListener("click", () => choose(pref !== "off"));
-  silent.addEventListener("click", () => choose(pref === "off"));
+  withSound.addEventListener("click", () => choose(true));
+  silent.addEventListener("click", () => choose(false));
   const wait = () => {
     if (boot.shown < 1) return gsap.delayedCall(.1, wait);
     enter.hidden = false;

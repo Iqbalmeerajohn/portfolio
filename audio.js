@@ -3,8 +3,9 @@
 
    Key: D major. Each chapter has its own chord; moving between chapters
    crossfades a warm string-like pad, plays a soft electric-piano phrase,
-   and brushes an airy whoosh. Scrubbing the particles releases tiny
-   unpitched grains, like sand or rain, so it sounds like the dots look. */
+   and brushes an airy whoosh. Scrubbing the particles drops small wooden
+   balls: each lands with a soft thock and bounces to rest, tuned low to the
+   current chapter's chord so it sits inside the music. */
 
 const midi = n => 440 * Math.pow(2, (n - 69) / 12);
 // one chord per chapter, in chapter order
@@ -117,30 +118,44 @@ export function createAudio(opts = {}) {
     car.start(t); mod.start(t); car.stop(t + 3.3); mod.stop(t + 3.3);
   }
 
-  /* particle grain: a few milliseconds of band-passed noise, no pitch.
-     Many of them in a row sound like fine sand or rain scattering, which
-     is what the dots look like when you push through them. */
-  let grainBuf = null;
-  function grain(t, vel, p, bright = 1) {
-    if (!grainBuf) {
-      const len = Math.round(ctx.sampleRate * .06); grainBuf = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = grainBuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  /* a dot as a small ball dropping on a wooden floor */
+  let clickBuf = null;
+  let landing = []; // audio-clock times when each ball in the air comes to rest
+  function thock(t, amp, p, f) {
+    if (!clickBuf) {
+      const len = Math.round(ctx.sampleRate * .02); clickBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = clickBuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
     }
-    const src = ctx.createBufferSource(); src.buffer = grainBuf;
-    const bp = ctx.createBiquadFilter(); bp.type = "bandpass";
-    bp.frequency.value = (1800 + Math.random() * 5200) * bright; bp.Q.value = 1.5 + Math.random() * 4;
-    const g = ctx.createGain(), len = .006 + Math.random() * .024;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.34 * vel, t + .0012); g.gain.exponentialRampToValueAtTime(.0004, t + len);
-    src.connect(bp); bp.connect(g); out(pan(g, p), .22);
-    src.start(t, Math.random() * .03); src.stop(t + len + .01);
-    // now and then a faint soft "tock" underneath, so the texture has weight
-    if (Math.random() < .22) {
-      const o = ctx.createOscillator(), og = ctx.createGain();
-      o.frequency.setValueAtTime(160 + Math.random() * 140, t); o.frequency.exponentialRampToValueAtTime(90, t + .04);
-      og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(.05 * vel, t + .002); og.gain.exponentialRampToValueAtTime(.0003, t + .05);
-      o.connect(og); out(pan(og, p * .5), .1); o.start(t); o.stop(t + .06);
-    }
+    // body: a short tone that drops in pitch, like a ball deforming on impact
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f * 1.8, t); o.frequency.exponentialRampToValueAtTime(f, t + .018);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.38 * amp, t + .0015); g.gain.exponentialRampToValueAtTime(.0004, t + .075 + amp * .05);
+    o.connect(g);
+    // contact: a tiny dull click from the floor
+    const n = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), ng = ctx.createGain();
+    n.buffer = clickBuf; lp.type = "lowpass"; lp.frequency.value = 1400 + amp * 1800;
+    ng.gain.setValueAtTime(.24 * amp, t); ng.gain.exponentialRampToValueAtTime(.0005, t + .012);
+    n.connect(lp); lp.connect(ng);
+    const mix = ctx.createGain(); g.connect(mix); ng.connect(mix);
+    out(pan(mix, p), .16);
+    o.start(t); o.stop(t + .16); n.start(t); n.stop(t + .02);
   }
+  function ball(t, vel, p, m) {
+    landing = landing.filter(e => e > ctx.currentTime);
+    if (landing.length > 18) return;
+    const f = midi(m);
+    let dt = .13 + Math.random() * .09, amp = vel, when = t;
+    const bounces = 3 + (Math.random() * 2 | 0);
+    for (let i = 0; i < bounces; i++) {
+      // each bounce: a touch higher (the ball stiffens), sooner and quieter
+      thock(when, amp, p + (Math.random() - .5) * .08, f * (1 + i * .015));
+      when += dt; dt *= .6; amp *= .5;
+    }
+    landing.push(when);
+  }
+  // pick a low note from the current chapter's chord
+  const ballNote = () => { const ch = CHORDS[S.chapter] || CHORDS[0]; return ch[1 + (Math.random() * (ch.length - 1) | 0)] + (Math.random() < .5 ? 0 : 12); };
 
   function whoosh(t, dur = 1.1, up = true, p = 0) {
     const src = ctx.createBufferSource(); src.buffer = noiseBuf(dur + .1);
@@ -191,8 +206,8 @@ export function createAudio(opts = {}) {
       boom(b);
       whoosh(b, 1.6, false, 0);
       S.chapter = 0; padChord(CHORDS[0], b, 2.2);
-      // the burst: a spray of grains that thins out as the dots settle into the name
-      for (let i = 0; i < 70; i++) { const k = i / 70; grain(b + .02 + k * k * 2.2 + Math.random() * .04, .9 * (1 - k * .8), (Math.random() - .5) * 1.8, 1.2 - k * .4); }
+      // the burst: a shower of balls that thins out as the dots settle into the name
+      for (let i = 0; i < 16; i++) { const k = i / 16; ball(b + .05 + k * k * 1.9 + Math.random() * .05, .85 * (1 - k * .6), (Math.random() - .5) * 1.6, CHORDS[0][1 + (i % 4)] + (i % 3 === 0 ? 12 : 0)); }
       MOTIF.forEach((m, i) => bell(m, b + 1.1 + i * .32, .7, (i - 1) * .35));
     },
     /* chapter change: new chord, a short piano phrase, a brush of air */
@@ -219,17 +234,17 @@ export function createAudio(opts = {}) {
     scrub(speed, x) {
       if (!S.on || !ctx) return;
       const now = ctx.currentTime;
-      if (now - S.lastTick < .014) return;
+      if (now - S.lastTick < .06) return;
       S.lastTick = now;
-      // faster movement disturbs more dots: up to 7 grains, scattered over the next 90ms
-      const count = Math.min(7, 1 + Math.floor(speed / 7)), p = (x - .5) * 1.6;
+      // faster movement knocks more balls loose: up to 2, dropped here and there
+      const count = Math.min(2, 1 + Math.floor(speed / 26)), p = (x - .5) * 1.6;
       for (let k = 0; k < count; k++)
-        grain(now + Math.random() * .09, .3 + Math.random() * .6, p + (Math.random() - .5) * .5, .8 + Math.min(.6, speed / 120));
+        ball(now + Math.random() * .12, .45 + Math.random() * .45, p + (Math.random() - .5) * .6, ballNote());
     },
     hover() {
       if (!S.on || !ctx) return;
       const t = ctx.currentTime;
-      grain(t, .35, 0, 1.1); grain(t + .018, .2, 0, 1.3);
+      thock(t, .35, 0, midi(ballNote()));
     },
     suspend() { ctx?.suspend(); },
     resume() { if (S.on) ctx?.resume(); }
