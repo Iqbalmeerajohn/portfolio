@@ -255,3 +255,6 @@ main{touch-action:pan-y pinch-zoom}
   .journey{padding-top:66vh}
   .journey .timeline,.journey .big,.journey .portrait-cap{max-width:none}
 }
+
+/* journey title fits one line beside the portrait */
+@media (min-width:901px){.journey .big{font-size:clamp(40px,4.6vw,78px);white-space:nowrap}}
