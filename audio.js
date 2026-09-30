@@ -3,8 +3,8 @@
 
    Key: D major. Each chapter has its own chord; moving between chapters
    crossfades a warm string-like pad, plays a soft electric-piano phrase,
-   and brushes an airy whoosh. Scrubbing the particles taps glass beads
-   on the D major pentatonic scale, so any flurry of notes sounds musical. */
+   and brushes an airy whoosh. Scrubbing the particles releases tiny
+   unpitched grains, like sand or rain, so it sounds like the dots look. */
 
 const midi = n => 440 * Math.pow(2, (n - 69) / 12);
 // one chord per chapter, in chapter order
@@ -20,7 +20,6 @@ const CHORDS = [
   [47, 54, 57, 62, 64], // journey    Bm11
   [38, 45, 52, 54, 61]  // contact    Dmaj9 (low, resolved)
 ];
-const PENTA = [74, 76, 78, 81, 83, 86, 88, 90, 93, 95]; // D major pentatonic, D5 to B6
 const MOTIF = [74, 81, 90];                             // D5 A5 F#6: the signature
 
 export function createAudio(opts = {}) {
@@ -118,15 +117,29 @@ export function createAudio(opts = {}) {
     car.start(t); mod.start(t); car.stop(t + 3.3); mod.stop(t + 3.3);
   }
 
-  /* glass bead tap for scrubbing particles */
-  function bead(m, t, vel, p) {
-    const f = midi(m), g = ctx.createGain(), o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), g2 = ctx.createGain();
-    o1.type = "sine"; o1.frequency.value = f; o2.type = "sine"; o2.frequency.value = f * 2.76; g2.gain.value = .35;
-    o1.connect(g); o2.connect(g2); g2.connect(g);
-    const len = .09 + Math.random() * .16;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05 * vel, t + .003); g.gain.exponentialRampToValueAtTime(.0003, t + len);
-    out(pan(g, p), .45);
-    o1.start(t); o2.start(t); o1.stop(t + len + .02); o2.stop(t + len + .02);
+  /* particle grain: a few milliseconds of band-passed noise, no pitch.
+     Many of them in a row sound like fine sand or rain scattering, which
+     is what the dots look like when you push through them. */
+  let grainBuf = null;
+  function grain(t, vel, p, bright = 1) {
+    if (!grainBuf) {
+      const len = Math.round(ctx.sampleRate * .06); grainBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = grainBuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const src = ctx.createBufferSource(); src.buffer = grainBuf;
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass";
+    bp.frequency.value = (1800 + Math.random() * 5200) * bright; bp.Q.value = 1.5 + Math.random() * 4;
+    const g = ctx.createGain(), len = .006 + Math.random() * .024;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.34 * vel, t + .0012); g.gain.exponentialRampToValueAtTime(.0004, t + len);
+    src.connect(bp); bp.connect(g); out(pan(g, p), .22);
+    src.start(t, Math.random() * .03); src.stop(t + len + .01);
+    // now and then a faint soft "tock" underneath, so the texture has weight
+    if (Math.random() < .22) {
+      const o = ctx.createOscillator(), og = ctx.createGain();
+      o.frequency.setValueAtTime(160 + Math.random() * 140, t); o.frequency.exponentialRampToValueAtTime(90, t + .04);
+      og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(.05 * vel, t + .002); og.gain.exponentialRampToValueAtTime(.0003, t + .05);
+      o.connect(og); out(pan(og, p * .5), .1); o.start(t); o.stop(t + .06);
+    }
   }
 
   function whoosh(t, dur = 1.1, up = true, p = 0) {
@@ -178,7 +191,8 @@ export function createAudio(opts = {}) {
       boom(b);
       whoosh(b, 1.6, false, 0);
       S.chapter = 0; padChord(CHORDS[0], b, 2.2);
-      [0, 1, 2, 3, 4, 5, 6, 7, 8].forEach(i => bead(PENTA[(Math.random() * PENTA.length) | 0] + 12 * (i % 2), b + .05 + i * .07 + Math.random() * .05, .6, (Math.random() - .5) * 1.4));
+      // the burst: a spray of grains that thins out as the dots settle into the name
+      for (let i = 0; i < 70; i++) { const k = i / 70; grain(b + .02 + k * k * 2.2 + Math.random() * .04, .9 * (1 - k * .8), (Math.random() - .5) * 1.8, 1.2 - k * .4); }
       MOTIF.forEach((m, i) => bell(m, b + 1.1 + i * .32, .7, (i - 1) * .35));
     },
     /* chapter change: new chord, a short piano phrase, a brush of air */
@@ -205,17 +219,17 @@ export function createAudio(opts = {}) {
     scrub(speed, x) {
       if (!S.on || !ctx) return;
       const now = ctx.currentTime;
-      const count = Math.min(3, Math.floor(speed / 14));
-      for (let k = 0; k < count; k++) {
-        if (now - S.lastTick < .035) break;
-        S.lastTick = now;
-        const m = PENTA[(Math.random() * PENTA.length) | 0];
-        bead(m, now + Math.random() * .09, .35 + Math.random() * .5, (x - .5) * 1.6 + (Math.random() - .5) * .3);
-      }
+      if (now - S.lastTick < .014) return;
+      S.lastTick = now;
+      // faster movement disturbs more dots: up to 7 grains, scattered over the next 90ms
+      const count = Math.min(7, 1 + Math.floor(speed / 7)), p = (x - .5) * 1.6;
+      for (let k = 0; k < count; k++)
+        grain(now + Math.random() * .09, .3 + Math.random() * .6, p + (Math.random() - .5) * .5, .8 + Math.min(.6, speed / 120));
     },
     hover() {
       if (!S.on || !ctx) return;
-      bead(PENTA[5 + ((Math.random() * 3) | 0)], ctx.currentTime, .25, 0);
+      const t = ctx.currentTime;
+      grain(t, .35, 0, 1.1); grain(t + .018, .2, 0, 1.3);
     },
     suspend() { ctx?.suspend(); },
     resume() { if (S.on) ctx?.resume(); }

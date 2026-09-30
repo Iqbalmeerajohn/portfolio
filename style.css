@@ -208,10 +208,13 @@ h1 em{font-style:normal;color:var(--mari)}
 @keyframes eq{0%,100%{height:3px}50%{height:12px}}
 @media (max-width:640px){.sound-label{display:none}.sound{padding:0 10px}}
 
-/* GHOST WORDS behind each chapter */
-.ghost{position:sticky;top:calc(50dvh - 11vw);height:0;overflow:visible;pointer-events:none;z-index:-1;
-  font:700 22vw/1 var(--display);letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px rgb(236 232 220 / .09);white-space:nowrap;will-change:transform}
-@media (max-width:900px){.ghost{display:none}}
+/* GHOST WORDS behind each chapter: sized by JS so the whole word always fits the screen */
+.ghost{position:sticky;top:30vh;height:0;overflow:visible;pointer-events:none;z-index:-1;text-align:center;white-space:nowrap}
+.ghost-word{display:inline-block;font:700 22vw/1 var(--display);letter-spacing:-.03em;will-change:transform}
+/* stroke and fill live on each letter, since letters animate on their own */
+.ghost-word span{display:inline-block;color:transparent;-webkit-text-stroke:1.5px rgb(236 232 220 / .3);
+  background:linear-gradient(180deg,rgb(236 232 220 / .11),rgb(236 232 220 / .015) 75%);-webkit-background-clip:text;background-clip:text}
+@media (max-width:900px){.ghost-word span{-webkit-text-stroke-width:1px}}
 
 /* FEDERATED DIAGRAM */
 .fed svg{width:100%;height:auto;display:block}

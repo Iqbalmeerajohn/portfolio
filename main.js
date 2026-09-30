@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { createAudio } from "./audio.js";
+import { createAudio } from "./audio.js?v=8c04236e4f";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -557,14 +557,48 @@ $$("[data-count]").forEach(el => {
 });
 if (!reduce) gsap.from(".stat", { opacity: 0, y: 26, duration: 1, stagger: .08, ease: EASE, scrollTrigger: { trigger: ".proof", start: "top 88%" } });
 
+// ghost words: split into letters and size each so the whole word fits 92% of the screen width
+const ghosts = $$(".ghost").map(g => {
+  const text = g.textContent.trim(); g.textContent = "";
+  const w = document.createElement("span"); w.className = "ghost-word";
+  text.split("").forEach(ch => { const s = document.createElement("span"); s.textContent = ch; w.appendChild(s); });
+  g.appendChild(w); return w;
+});
+function fitGhosts() {
+  const wide = innerWidth > 900;
+  ghosts.forEach(w => {
+    const g = w.parentElement, side = sideOf(secs.indexOf(g.closest("[data-scene]")));
+    w.style.fontSize = "100px";
+    const width = w.getBoundingClientRect().width || 1;
+    // laptop: fill the open half of the screen (where the particles are), low like a caption
+    // phone: fill the width near the top, behind the shape
+    const room = wide ? innerWidth * .44 : innerWidth * .92;
+    const size = Math.min(innerWidth * (wide ? .16 : .24), 100 * room / width);
+    w.style.fontSize = size + "px";
+    g.style.textAlign = wide ? (side > 0 ? "right" : "left") : "center";
+    g.style.paddingInline = wide ? "3vw" : "0";
+    // phone: the section's first 62vh is open space above the panel, so the word sits there
+    g.style.position = wide ? "sticky" : "absolute";
+    g.style.left = g.style.right = wide ? "" : "0";
+    g.style.top = wide ? `${Math.round(innerHeight * .74 - size * .5)}px` : `${Math.round(innerHeight * .44)}px`;
+  });
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fitGhosts(); ScrollTrigger.refresh(); });
+fitGhosts();
+addEventListener("resize", () => fitGhosts());
+
 // work chapters
 $$(".work").forEach(sec => {
   const panel = sec.querySelector(".panel"), ghost = sec.querySelector(".ghost");
   const words = sec.querySelectorAll("h2 .w > span");
   const bits = sec.querySelectorAll(".panel > p, .facts, .matches, .stages, .grid6, .thumb, .links, .fed, .emotions");
   if (reduce) return;
-  if (ghost) gsap.fromTo(ghost, { xPercent: sideOf(secs.indexOf(sec)) > 0 ? 10 : -40 }, { xPercent: sideOf(secs.indexOf(sec)) > 0 ? -40 : 10, ease: "none",
-    scrollTrigger: { trigger: sec, start: "top bottom", end: "bottom top", scrub: true } });
+  if (ghost) {
+    // letters rise in one by one as the chapter arrives, then the word drifts gently (never off screen)
+    const word = ghost.querySelector(".ghost-word"), dir = sideOf(secs.indexOf(sec));
+    gsap.from(word.children, { yPercent: 40, opacity: 0, duration: 1.2, stagger: .07, ease: EASE, scrollTrigger: { trigger: sec, start: "top 70%" } });
+    gsap.fromTo(word, { xPercent: 4 * dir }, { xPercent: -4 * dir, ease: "none", scrollTrigger: { trigger: sec, start: "top bottom", end: "bottom top", scrub: true } });
+  }
   gsap.set(words, { yPercent: 115 });
   ScrollTrigger.create({ trigger: sec, start: "top 45%", once: true, onEnter: () => {
     scramble(sec.querySelector(".kicker"));
