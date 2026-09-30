@@ -73,8 +73,10 @@ const lumOf = (r, g, b) => 0.3 * r + 0.59 * g + 0.11 * b;
 const SLATE = [.36, .43, .62], BONE_P = [.93, .91, .86];
 function portraitColor(r, g, b) {
   const lum = lumOf(r, g, b), s = sat(r, g, b);
-  if (r > b + .04 && s > .18) return [Math.min(1, r * 1.4 + .06), Math.min(1, g * 1.35 + .05), Math.min(1, b * 1.3 + .05)];
-  const v = (.42 + .58 * Math.pow(lum, .7)) * 1.55;
+  // skin: a gentle contrast lift that keeps the shading (no clipping to flat white)
+  if (r > b + .04 && s > .18) return [r, g, b].map(c => Math.min(1, Math.max(0, ((c - .5) * 1.2 + .5) * 1.32 + .06)));
+  // hair, glasses, stole: a deeper slate so the face stays the brightest part
+  const v = (.26 + .6 * Math.pow(lum, .8)) * 1.25;
   return mixc(SLATE, BONE_P, lum).map(c => Math.min(1, c * v));
 }
 const boost = (r, g, b) => [Math.min(1, r * 1.25 + .07), Math.min(1, g * 1.25 + .07), Math.min(1, b * 1.25 + .07)];
@@ -462,7 +464,7 @@ Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy, me]]) => {
     ringScene(), blobScene(), mfccScene(),
     kafa ? imageScene(kafa, 240, (r, g, b, a) => a > .5 && lumOf(r, g, b) > .6, (r, g, b, ty) => mixc(O, O2, ty)) : textScene("KAFA"),
     chompy ? imageScene(chompy, 230, (r, g, b) => sat(r, g, b) > .4 && lumOf(r, g, b) > .22, boost) : textScene("CHOMPY"),
-    me ? imageScene(me, 220, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5) && !(g > r + .04 && g > b + .04), portraitColor, (x, y) => y < .52 ? 6 : 1, .035) : starScene(),
+    me ? imageScene(me, 300, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5) && !(g > r + .04 && g > b + .04), portraitColor, (x, y) => y < .52 ? 8 : (Math.random() < .5 ? 1 : 0), .035) : starScene(),
     textScene("SAY HI")
   ];
   resize();
