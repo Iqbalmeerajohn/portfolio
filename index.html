@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sheik Iqbal Meera John | AI Engineer</title>
+<meta name="description" content="AI engineer and full-stack developer from Visakhapatnam. Builds memory-first AI systems, visual search agents and payment-recovery agents with FastAPI, PostgreSQL, pgvector and Next.js.">
+<meta property="og:title" content="Sheik Iqbal Meera John | AI Engineer">
+<meta property="og:description" content="AI that remembers, sees, and knows when to say no. GUMMY OS, a saree visual-search agent, and SALVAGE.">
+<meta property="og:image" content="assets/gummy.webp">
+<meta name="theme-color" content="#0a0f1c">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a href="#top" class="brand" aria-label="Back to top">Iqbal<span>.</span></a>
+  <nav aria-label="Primary">
+    <a href="#work">Work</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact" class="nav-cta">Email me</a>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- HERO: particles assemble into the name like vectors converging on a query -->
+  <section class="hero" aria-labelledby="hero-h">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <div class="hero-copy">
+      <p class="eyebrow">AI Engineer &amp; Full-Stack Developer</p>
+      <h1 id="hero-h" class="split">I build AI that <span class="nb"><em>remembers</em>,</span> <span class="nb"><em>sees</em>,</span> and knows when to say no.</h1>
+      <p class="lede">Memory systems, visual search agents and payment agents, shipped with tests you can run.</p>
+      <div class="ctas">
+        <a class="btn btn-solid magnetic" href="#work"><span>See work</span></a>
+        <a class="btn btn-ghost magnetic" href="#contact"><span>Email me</span></a>
+      </div>
+    </div>
+    <p class="hero-hint" aria-hidden="true">Move your cursor through the name</p>
+  </section>
+
+  <!-- PROOF: real numbers from the repos, counted in on view -->
+  <section class="proof" aria-label="Numbers from my projects">
+    <div class="stat"><b data-count="1016">0</b><span>backend tests passing in GUMMY OS</span></div>
+    <div class="stat"><b data-count="1059">0</b><span>saree images indexed for visual search</span></div>
+    <div class="stat"><b data-count="20000" data-prefix="~">0</b><span>randomized inputs proving SALVAGE never overspends</span></div>
+    <div class="stat"><b data-count="73">0</b><span>API endpoints across 15 routers</span></div>
+    <div class="stat"><b data-count="92" data-suffix="%+">0</b><span>speech emotion accuracy, Top 30 of 350+ projects</span></div>
+  </section>
+
+  <!-- WORK: sticky stack, each project gets its own visual language -->
+  <section class="work" id="work" aria-labelledby="work-h">
+    <h2 id="work-h" class="section-title split">Selected work</h2>
+
+    <div class="stack">
+      <!-- 1. Saree -->
+      <article class="card card-saree">
+        <div class="card-copy">
+          <p class="kicker">AI agent · Computer vision · 2026</p>
+          <h3>Saree Visual Similarity Search</h3>
+          <p>Upload a saree photo, get the closest designs back. A LangChain agent on Gemini decides when to run visual search, applies filters, and explains every match.</p>
+          <ul class="facts">
+            <li><b>1,059</b> images, <b>645</b> designs</li>
+            <li><b>85</b> audit tests in CI</li>
+            <li>FashionSigLIP + FAISS exact cosine</li>
+          </ul>
+          <div class="links">
+            <a href="https://saree-visual-similarity-search.streamlit.app/" target="_blank" rel="noopener">Live app</a>
+            <a href="https://github.com/Iqbalmeerajohn/saree-visual-similarity-search" target="_blank" rel="noopener">Code</a>
+          </div>
+        </div>
+        <div class="search-demo" aria-label="A real query from the evaluation set and its top five results">
+          <div class="sd-query">
+            <img src="assets/saree-0.webp" alt="Query: maroon saree with printed border" width="186" height="300">
+            <span>Query</span>
+          </div>
+          <div class="sd-scan" aria-hidden="true"><i></i><em><b class="sd-count">0</b> / 1,059 scanned</em></div>
+          <ol class="sd-results">
+            <li><img src="assets/saree-1.webp" alt="Match 1: red saree with matching print" width="186" height="300"><span>#1</span></li>
+            <li><img src="assets/saree-2.webp" alt="Match 2: black saree, same border pattern" width="186" height="300"><span>#2</span></li>
+            <li><img src="assets/saree-3.webp" alt="Match 3: purple saree with peacock motif" width="186" height="300"><span>#3</span></li>
+            <li><img src="assets/saree-4.webp" alt="Match 4: pink saree with floral panel" width="186" height="300"><span>#4</span></li>
+            <li><img src="assets/saree-5.webp" alt="Match 5: gold woven saree" width="186" height="300"><span>#5</span></li>
+          </ol>
+          <button class="replay" type="button">Run the search again</button>
+        </div>
+      </article>
+
+      <!-- 2. Salvage -->
+      <article class="card card-salvage">
+        <div class="card-copy">
+          <p class="kicker">Agentic AI · Payments · Razorpay AI Builder Buildathon 2026</p>
+          <h3>SALVAGE, the revenue recovery agent</h3>
+          <p>When a payment fails, SALVAGE decides who deserves a retry, prices the nudge, and measures lift against a real control group. The LLM only proposes. A pure, tested function owns every rupee.</p>
+          <ul class="facts">
+            <li><b>9</b>-stage agent loop</li>
+            <li><b>27</b> tests, <b>~20,000</b> property inputs</li>
+            <li>Exactly-once execution, hash-chained audit log</li>
+          </ul>
+          <div class="links">
+            <a href="https://github.com/Iqbalmeerajohn/Salvage" target="_blank" rel="noopener">Code</a>
+          </div>
+        </div>
+        <div class="pipeline" aria-label="The SALVAGE decision loop">
+          <ol>
+            <li>Observe</li><li>Reason <small>LLM</small></li><li>Plan <small>LLM</small></li>
+            <li class="gate">Policy gate <small>pure function</small></li><li>Approval</li><li>Execute</li>
+            <li>Verify</li><li>Audit</li><li>Recover</li>
+          </ol>
+          <p class="pipe-note">The model can suggest. It can never move more money than the merchant's caps allow.</p>
+        </div>
+      </article>
+
+      <!-- 3. GUMMY OS (middle) -->
+      <article class="card card-gummy">
+        <div class="card-copy">
+          <p class="kicker">Personal AI system · 2026</p>
+          <h3>GUMMY OS</h3>
+          <p>A memory-first AI operating system that runs on your own machine. It learns from conversations, stores memories in PostgreSQL with pgvector, and ranks them by meaning, importance, recency and confidence before any agent answers.</p>
+          <div class="links">
+            <a href="https://gummy-os.vercel.app" target="_blank" rel="noopener">Live demo</a>
+            <a href="https://github.com/Iqbalmeerajohn/GUMMY-OS" target="_blank" rel="noopener">Code</a>
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="assets/gummy.webp" alt="GUMMY OS landing screen" width="1440" height="900" loading="lazy">
+        </figure>
+        <dl class="gummy-grid">
+          <div><dt>Backend tests</dt><dd>1,016</dd></div>
+          <div><dt>Frontend tests</dt><dd>25</dd></div>
+          <div><dt>API endpoints</dt><dd>73</dd></div>
+          <div><dt>DB migrations</dt><dd>25</dd></div>
+          <div><dt>Specialist agents</dt><dd>6</dd></div>
+          <div><dt>Executable tools</dt><dd>9</dd></div>
+        </dl>
+      </article>
+
+      <!-- 4. KAFA -->
+      <article class="card card-kafa">
+        <figure class="shot tilt">
+          <img src="assets/kafa.webp" alt="KAFA Cafe and Resto homepage" width="1440" height="900" loading="lazy">
+        </figure>
+        <div class="card-copy">
+          <p class="kicker">Full-stack web · 2026</p>
+          <h3>KAFA Cafe Digital Platform</h3>
+          <p>A mobile-first restaurant platform with a digital menu, QR ordering, table reservations and an admin dashboard. Next.js, TypeScript and Tailwind, deployed on Vercel.</p>
+          <div class="links">
+            <a href="https://kafa-cafe-resto.vercel.app" target="_blank" rel="noopener">Live site</a>
+            <a href="https://github.com/Iqbalmeerajohn/kafa-cafe-resto" target="_blank" rel="noopener">Code</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. CHOMPY -->
+      <article class="card card-chompy">
+        <div class="card-copy">
+          <p class="kicker">Brand web design · Motion · 2026</p>
+          <h3>CHOMPY</h3>
+          <p>A playful candy-brand homepage built so it reads like a real modern company. Brand identity, illustration, motion and responsive craft in Next.js and TypeScript.</p>
+          <div class="links">
+            <a href="https://candy-brand-homepage.vercel.app" target="_blank" rel="noopener">Live site</a>
+            <a href="https://github.com/Iqbalmeerajohn/candy-brand-homepage" target="_blank" rel="noopener">Code</a>
+          </div>
+        </div>
+        <figure class="shot tilt">
+          <img src="assets/chompy.webp" alt="CHOMPY candy brand homepage" width="1440" height="900" loading="lazy">
+        </figure>
+      </article>
+    </div>
+
+    <p class="also">Also built: <a href="https://github.com/Iqbalmeerajohn/emotion-recognition-speech" target="_blank" rel="noopener">Speech Emotion Recognition with Federated Learning</a>, MFCC features and multi-head attention, 92%+ accuracy on RAVDESS.</p>
+  </section>
+
+  <!-- EXPERIENCE: a line that draws itself as you read down -->
+  <section class="exp" id="experience" aria-labelledby="exp-h">
+    <h2 id="exp-h" class="section-title split">Where I've worked</h2>
+    <div class="timeline">
+      <svg class="tl-line" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 2 100"><line x1="1" y1="0" x2="1" y2="100"/></svg>
+      <div class="role now">
+        <time>Sep 2026 - Present</time>
+        <h3>Web Developer Intern</h3>
+        <p class="org">Spotmies</p>
+        <p>Building production web interfaces with the Spotmies team.</p>
+      </div>
+      <div class="role">
+        <time>Apr 2025 - Jun 2025</time>
+        <h3>AWS Data Engineering Virtual Intern</h3>
+        <p class="org">EduSkills</p>
+        <p>ETL pipelines, cloud storage and data engineering fundamentals.</p>
+      </div>
+      <div class="role">
+        <time>Jul 2024</time>
+        <h3>Data Science Virtual Intern</h3>
+        <p class="org">Cognorise InfoTech</p>
+        <p>Machine learning for sales prediction, fraud detection and business analytics.</p>
+      </div>
+      <div class="role edu">
+        <time>2022 - 2026</time>
+        <h3>B.Tech, Computer Science (Data Science)</h3>
+        <p class="org">GITAM University, Visakhapatnam</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK: one marquee on the page -->
+  <section class="stack-band" aria-label="Tools I use">
+    <div class="marquee"><div class="mq-track">
+      <span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>pgvector</span><span>LangChain</span><span>Gemini</span><span>FAISS</span><span>FashionSigLIP</span><span>RAG</span><span>Next.js</span><span>React</span><span>TypeScript</span><span>Tailwind CSS</span><span>Docker</span><span>Alembic</span><span>Streamlit</span><span>Vercel</span>
+    </div></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact" aria-labelledby="contact-h">
+    <h2 id="contact-h" class="split">Hiring, or need a website that works?</h2>
+    <p class="lede">Open to full-time AI and full-stack roles, and freelance web projects.</p>
+    <button class="email magnetic" type="button" data-email="iqbalmeerajohn1@gmail.com">
+      <span class="email-text">iqbalmeerajohn1@gmail.com</span>
+      <span class="email-tip" aria-live="polite">Click to copy</span>
+    </button>
+    <div class="socials">
+      <a href="https://www.linkedin.com/in/sheik-iqbal-meera-john-056191253/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/Iqbalmeerajohn" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Sheik Iqbal Meera John</span>
+  <span>Built by hand, no templates.</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
