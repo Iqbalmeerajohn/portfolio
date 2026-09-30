@@ -4,238 +4,215 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sheik Iqbal Meera John | AI Engineer</title>
-<meta name="description" content="AI engineer and full-stack developer from Visakhapatnam. Builds memory-first AI systems, visual search agents and payment-recovery agents with FastAPI, PostgreSQL, pgvector and Next.js.">
+<meta name="description" content="AI engineer and full-stack developer from Visakhapatnam. Memory-first AI systems, visual search agents and payment-recovery agents, built with FastAPI, PostgreSQL, pgvector and Next.js.">
 <meta property="og:title" content="Sheik Iqbal Meera John | AI Engineer">
-<meta property="og:description" content="AI that remembers, sees, and knows when to say no. GUMMY OS, a saree visual-search agent, and SALVAGE.">
-<meta property="og:image" content="assets/gummy.webp">
-<meta name="theme-color" content="#0a0f1c">
+<meta property="og:description" content="16,000 particles, one story: AI that remembers, sees, and knows when to say no.">
+<meta property="og:image" content="https://iqbalmeerajohn.github.io/portfolio/assets/gummy.webp">
+<meta name="theme-color" content="#070b16">
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
-<body>
+<body class="is-booting">
+
+<!-- BOOT: counts real asset loading, then wipes away -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-inner">
+    <p class="boot-label">Indexing memories</p>
+    <p class="boot-count"><span id="bootNum">000</span></p>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+  </div>
+</div>
+
+<!-- One particle system behind the whole story -->
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="nav" id="nav">
-  <a href="#top" class="brand" aria-label="Back to top">Iqbal<span>.</span></a>
+  <a href="#intro" class="brand" aria-label="Back to top">Iqbal<span>.</span></a>
   <nav aria-label="Primary">
-    <a href="#work">Work</a>
-    <a href="#experience">Experience</a>
+    <a href="#work-saree">Work</a>
+    <a href="#journey">Experience</a>
     <a href="#contact" class="nav-cta">Email me</a>
   </nav>
 </header>
 
-<main id="top">
-  <!-- HERO: particles assemble into the name like vectors converging on a query -->
-  <section class="hero" aria-labelledby="hero-h">
-    <canvas id="field" aria-hidden="true"></canvas>
+<!-- chapter rail: real navigation, shows where the particles are in the story -->
+<nav class="rail" aria-label="Chapters">
+  <a href="#intro" data-ch="0"><span>Intro</span></a>
+  <a href="#manifesto" data-ch="1"><span>Manifesto</span></a>
+  <a href="#work-saree" data-ch="2"><span>Saree agent</span></a>
+  <a href="#work-salvage" data-ch="3"><span>SALVAGE</span></a>
+  <a href="#work-gummy" data-ch="4"><span>GUMMY OS</span></a>
+  <a href="#work-kafa" data-ch="5"><span>KAFA</span></a>
+  <a href="#work-chompy" data-ch="6"><span>CHOMPY</span></a>
+  <a href="#journey" data-ch="7"><span>Journey</span></a>
+  <a href="#contact" data-ch="8"><span>Contact</span></a>
+</nav>
+
+<main>
+  <!-- 0 · particles become the name -->
+  <section class="chapter hero" id="intro" data-scene="0" aria-labelledby="hero-h">
     <div class="hero-copy">
-      <p class="eyebrow">AI Engineer &amp; Full-Stack Developer</p>
+      <p class="eyebrow scramble">AI Engineer &amp; Full-Stack Developer</p>
       <h1 id="hero-h" class="split">I build AI that <span class="nb"><em>remembers</em>,</span> <span class="nb"><em>sees</em>,</span> and knows when to say no.</h1>
-      <p class="lede">Memory systems, visual search agents and payment agents, shipped with tests you can run.</p>
+      <p class="lede">Every dot on this page is one of 16,000 particles. Scroll, and watch them rebuild my work.</p>
       <div class="ctas">
-        <a class="btn btn-solid magnetic" href="#work"><span>See work</span></a>
+        <a class="btn btn-solid magnetic" href="#work-saree"><span>See work</span></a>
         <a class="btn btn-ghost magnetic" href="#contact"><span>Email me</span></a>
       </div>
     </div>
-    <p class="hero-hint" aria-hidden="true">Move your cursor through the name</p>
+    <p class="hint" aria-hidden="true">Drag your cursor through the name</p>
   </section>
 
-  <!-- PROOF: real numbers from the repos, counted in on view -->
-  <section class="proof" aria-label="Numbers from my projects">
-    <div class="stat"><b data-count="1016">0</b><span>backend tests passing in GUMMY OS</span></div>
-    <div class="stat"><b data-count="1059">0</b><span>saree images indexed for visual search</span></div>
-    <div class="stat"><b data-count="20000" data-prefix="~">0</b><span>randomized inputs proving SALVAGE never overspends</span></div>
-    <div class="stat"><b data-count="73">0</b><span>API endpoints across 15 routers</span></div>
-    <div class="stat"><b data-count="92" data-suffix="%+">0</b><span>speech emotion accuracy, Top 30 of 350+ projects</span></div>
-  </section>
-
-  <!-- WORK: sticky stack, each project gets its own visual language -->
-  <section class="work" id="work" aria-labelledby="work-h">
-    <h2 id="work-h" class="section-title split">Selected work</h2>
-
-    <div class="stack">
-      <!-- 1. Saree -->
-      <article class="card card-saree">
-        <div class="card-copy">
-          <p class="kicker">AI agent · Computer vision · 2026</p>
-          <h3>Saree Visual Similarity Search</h3>
-          <p>Upload a saree photo, get the closest designs back. A LangChain agent on Gemini decides when to run visual search, applies filters, and explains every match.</p>
-          <ul class="facts">
-            <li><b>1,059</b> images, <b>645</b> designs</li>
-            <li><b>85</b> audit tests in CI</li>
-            <li>FashionSigLIP + FAISS exact cosine</li>
-          </ul>
-          <div class="links">
-            <a href="https://saree-visual-similarity-search.streamlit.app/" target="_blank" rel="noopener">Live app</a>
-            <a href="https://github.com/Iqbalmeerajohn/saree-visual-similarity-search" target="_blank" rel="noopener">Code</a>
-          </div>
-        </div>
-        <div class="search-demo" aria-label="A real query from the evaluation set and its top five results">
-          <div class="sd-query">
-            <img src="assets/saree-0.webp" alt="Query: maroon saree with printed border" width="186" height="300">
-            <span>Query</span>
-          </div>
-          <div class="sd-scan" aria-hidden="true"><i></i><em><b class="sd-count">0</b> / 1,059 scanned</em></div>
-          <ol class="sd-results">
-            <li><img src="assets/saree-1.webp" alt="Match 1: red saree with matching print" width="186" height="300"><span>#1</span></li>
-            <li><img src="assets/saree-2.webp" alt="Match 2: black saree, same border pattern" width="186" height="300"><span>#2</span></li>
-            <li><img src="assets/saree-3.webp" alt="Match 3: purple saree with peacock motif" width="186" height="300"><span>#3</span></li>
-            <li><img src="assets/saree-4.webp" alt="Match 4: pink saree with floral panel" width="186" height="300"><span>#4</span></li>
-            <li><img src="assets/saree-5.webp" alt="Match 5: gold woven saree" width="186" height="300"><span>#5</span></li>
-          </ol>
-          <button class="replay" type="button">Run the search again</button>
-        </div>
-      </article>
-
-      <!-- 2. Salvage -->
-      <article class="card card-salvage">
-        <div class="card-copy">
-          <p class="kicker">Agentic AI · Payments · Razorpay AI Builder Buildathon 2026</p>
-          <h3>SALVAGE, the revenue recovery agent</h3>
-          <p>When a payment fails, SALVAGE decides who deserves a retry, prices the nudge, and measures lift against a real control group. The LLM only proposes. A pure, tested function owns every rupee.</p>
-          <ul class="facts">
-            <li><b>9</b>-stage agent loop</li>
-            <li><b>27</b> tests, <b>~20,000</b> property inputs</li>
-            <li>Exactly-once execution, hash-chained audit log</li>
-          </ul>
-          <div class="links">
-            <a href="https://github.com/Iqbalmeerajohn/Salvage" target="_blank" rel="noopener">Code</a>
-          </div>
-        </div>
-        <div class="pipeline" aria-label="The SALVAGE decision loop">
-          <ol>
-            <li>Observe</li><li>Reason <small>LLM</small></li><li>Plan <small>LLM</small></li>
-            <li class="gate">Policy gate <small>pure function</small></li><li>Approval</li><li>Execute</li>
-            <li>Verify</li><li>Audit</li><li>Recover</li>
-          </ol>
-          <p class="pipe-note">The model can suggest. It can never move more money than the merchant's caps allow.</p>
-        </div>
-      </article>
-
-      <!-- 3. GUMMY OS (middle) -->
-      <article class="card card-gummy">
-        <div class="card-copy">
-          <p class="kicker">Personal AI system · 2026</p>
-          <h3>GUMMY OS</h3>
-          <p>A memory-first AI operating system that runs on your own machine. It learns from conversations, stores memories in PostgreSQL with pgvector, and ranks them by meaning, importance, recency and confidence before any agent answers.</p>
-          <div class="links">
-            <a href="https://gummy-os.vercel.app" target="_blank" rel="noopener">Live demo</a>
-            <a href="https://github.com/Iqbalmeerajohn/GUMMY-OS" target="_blank" rel="noopener">Code</a>
-          </div>
-        </div>
-        <figure class="shot">
-          <img src="assets/gummy.webp" alt="GUMMY OS landing screen" width="1440" height="900" loading="lazy">
-        </figure>
-        <dl class="gummy-grid">
-          <div><dt>Backend tests</dt><dd>1,016</dd></div>
-          <div><dt>Frontend tests</dt><dd>25</dd></div>
-          <div><dt>API endpoints</dt><dd>73</dd></div>
-          <div><dt>DB migrations</dt><dd>25</dd></div>
-          <div><dt>Specialist agents</dt><dd>6</dd></div>
-          <div><dt>Executable tools</dt><dd>9</dd></div>
-        </dl>
-      </article>
-
-      <!-- 4. KAFA -->
-      <article class="card card-kafa">
-        <figure class="shot tilt">
-          <img src="assets/kafa.webp" alt="KAFA Cafe and Resto homepage" width="1440" height="900" loading="lazy">
-        </figure>
-        <div class="card-copy">
-          <p class="kicker">Full-stack web · 2026</p>
-          <h3>KAFA Cafe Digital Platform</h3>
-          <p>A mobile-first restaurant platform with a digital menu, QR ordering, table reservations and an admin dashboard. Next.js, TypeScript and Tailwind, deployed on Vercel.</p>
-          <div class="links">
-            <a href="https://kafa-cafe-resto.vercel.app" target="_blank" rel="noopener">Live site</a>
-            <a href="https://github.com/Iqbalmeerajohn/kafa-cafe-resto" target="_blank" rel="noopener">Code</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- 5. CHOMPY -->
-      <article class="card card-chompy">
-        <div class="card-copy">
-          <p class="kicker">Brand web design · Motion · 2026</p>
-          <h3>CHOMPY</h3>
-          <p>A playful candy-brand homepage built so it reads like a real modern company. Brand identity, illustration, motion and responsive craft in Next.js and TypeScript.</p>
-          <div class="links">
-            <a href="https://candy-brand-homepage.vercel.app" target="_blank" rel="noopener">Live site</a>
-            <a href="https://github.com/Iqbalmeerajohn/candy-brand-homepage" target="_blank" rel="noopener">Code</a>
-          </div>
-        </div>
-        <figure class="shot tilt">
-          <img src="assets/chompy.webp" alt="CHOMPY candy brand homepage" width="1440" height="900" loading="lazy">
-        </figure>
-      </article>
+  <!-- 1 · memory core + manifesto that lights up word by word -->
+  <section class="chapter manifesto" id="manifesto" data-scene="1" aria-label="Manifesto">
+    <div class="man-pin">
+      <p class="man-text" id="manText">Most AI demos forget you the moment you close the tab. I build systems that keep what matters, look closer than a keyword ever could, and refuse to spend a rupee they can't justify.</p>
+      <div class="proof">
+        <div class="stat"><b data-count="1016">0</b><span>backend tests passing in GUMMY OS</span></div>
+        <div class="stat"><b data-count="1059">0</b><span>saree images indexed for visual search</span></div>
+        <div class="stat"><b data-count="20000" data-prefix="~">0</b><span>randomized inputs proving SALVAGE never overspends</span></div>
+        <div class="stat"><b data-count="92" data-suffix="%+">0</b><span>speech emotion accuracy, Top 30 of 350+</span></div>
+      </div>
     </div>
-
-    <p class="also">Also built: <a href="https://github.com/Iqbalmeerajohn/emotion-recognition-speech" target="_blank" rel="noopener">Speech Emotion Recognition with Federated Learning</a>, MFCC features and multi-head attention, 92%+ accuracy on RAVDESS.</p>
   </section>
 
-  <!-- EXPERIENCE: a line that draws itself as you read down -->
-  <section class="exp" id="experience" aria-labelledby="exp-h">
-    <h2 id="exp-h" class="section-title split">Where I've worked</h2>
+  <!-- 2 · Saree -->
+  <section class="chapter work" id="work-saree" data-scene="2" data-side="left" aria-labelledby="saree-h">
+    <article class="panel">
+      <p class="kicker scramble">AI agent · Computer vision</p>
+      <h2 id="saree-h" class="split">Saree Visual Similarity Search</h2>
+      <p>Those particles are a real saree from the catalogue. Upload a photo and a LangChain agent on Gemini decides when to search, applies filters, and explains every match.</p>
+      <ul class="facts">
+        <li><b>1,059</b> images</li><li><b>645</b> designs</li><li><b>85</b> CI tests</li><li>FashionSigLIP + FAISS</li>
+      </ul>
+      <div class="matches" aria-label="A real query and its top five matches">
+        <figure class="q"><img src="assets/saree-0.webp" alt="Query saree" width="186" height="300"><figcaption>Query</figcaption></figure>
+        <img src="assets/saree-1.webp" alt="Match 1" width="186" height="300">
+        <img src="assets/saree-2.webp" alt="Match 2" width="186" height="300">
+        <img src="assets/saree-3.webp" alt="Match 3" width="186" height="300">
+        <img src="assets/saree-4.webp" alt="Match 4" width="186" height="300">
+      </div>
+      <div class="links">
+        <a href="https://saree-visual-similarity-search.streamlit.app/" target="_blank" rel="noopener">Live app</a>
+        <a href="https://github.com/Iqbalmeerajohn/saree-visual-similarity-search" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 3 · SALVAGE -->
+  <section class="chapter work" id="work-salvage" data-scene="3" data-side="right" aria-labelledby="salvage-h">
+    <article class="panel">
+      <p class="kicker scramble">Agentic AI · Razorpay AI Builder Buildathon 2026</p>
+      <h2 id="salvage-h" class="split">SALVAGE, the revenue recovery agent</h2>
+      <p>Nine stages in a ring, one glowing gate. When a payment fails, the LLM proposes. A pure, tested function owns every rupee, and every action is logged in a hash chain.</p>
+      <ol class="stages" aria-label="The nine-stage decision loop">
+        <li>Observe</li><li>Reason</li><li>Plan</li><li class="gate">Policy gate</li><li>Approval</li><li>Execute</li><li>Verify</li><li>Audit</li><li>Recover</li>
+      </ol>
+      <ul class="facts">
+        <li><b>27</b> tests</li><li><b>~20,000</b> property inputs</li><li>Exactly-once execution</li>
+      </ul>
+      <div class="links">
+        <a href="https://github.com/Iqbalmeerajohn/Salvage" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 4 · GUMMY OS -->
+  <section class="chapter work" id="work-gummy" data-scene="4" data-side="left" aria-labelledby="gummy-h">
+    <article class="panel">
+      <p class="kicker scramble">Personal AI operating system</p>
+      <h2 id="gummy-h" class="split">GUMMY OS</h2>
+      <p>A memory-first AI system that runs on your own machine. It stores what it learns in PostgreSQL with pgvector and ranks memories by meaning, importance, recency and confidence before any of its agents reply.</p>
+      <dl class="grid6">
+        <div><dt>Backend tests</dt><dd data-count="1016">0</dd></div>
+        <div><dt>API endpoints</dt><dd data-count="73">0</dd></div>
+        <div><dt>Migrations</dt><dd data-count="25">0</dd></div>
+        <div><dt>Frontend tests</dt><dd data-count="25">0</dd></div>
+        <div><dt>Agents</dt><dd data-count="6">0</dd></div>
+        <div><dt>Tools</dt><dd data-count="9">0</dd></div>
+      </dl>
+      <figure class="thumb tilt"><img src="assets/gummy.webp" alt="GUMMY OS landing screen" width="1440" height="900" loading="lazy"></figure>
+      <div class="links">
+        <a href="https://gummy-os.vercel.app" target="_blank" rel="noopener">Live demo</a>
+        <a href="https://github.com/Iqbalmeerajohn/GUMMY-OS" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 5 · KAFA -->
+  <section class="chapter work" id="work-kafa" data-scene="5" data-side="right" aria-labelledby="kafa-h">
+    <article class="panel">
+      <p class="kicker scramble">Full-stack web</p>
+      <h2 id="kafa-h" class="split">KAFA Cafe Digital Platform</h2>
+      <p>The raccoon is KAFA's own logo, drawn in particles. Behind it, a mobile-first restaurant platform with a digital menu, QR ordering, table reservations and an admin dashboard.</p>
+      <ul class="facts"><li>Next.js 15</li><li>TypeScript</li><li>Tailwind CSS</li><li>Vercel</li></ul>
+      <figure class="thumb tilt"><img src="assets/kafa.webp" alt="KAFA Cafe homepage" width="1440" height="900" loading="lazy"></figure>
+      <div class="links">
+        <a href="https://kafa-cafe-resto.vercel.app" target="_blank" rel="noopener">Live site</a>
+        <a href="https://github.com/Iqbalmeerajohn/kafa-cafe-resto" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 6 · CHOMPY -->
+  <section class="chapter work" id="work-chompy" data-scene="6" data-side="left" aria-labelledby="chompy-h">
+    <article class="panel">
+      <p class="kicker scramble">Brand web design · Motion</p>
+      <h2 id="chompy-h" class="split">CHOMPY</h2>
+      <p>A playful candy-brand homepage built to read like a real modern company: brand identity, illustration, motion and responsive craft. The bear you see is its hero art, rebuilt in particles.</p>
+      <ul class="facts"><li>Next.js</li><li>TypeScript</li><li>Motion design</li></ul>
+      <figure class="thumb tilt"><img src="assets/chompy.webp" alt="CHOMPY homepage" width="1440" height="900" loading="lazy"></figure>
+      <div class="links">
+        <a href="https://candy-brand-homepage.vercel.app" target="_blank" rel="noopener">Live site</a>
+        <a href="https://github.com/Iqbalmeerajohn/candy-brand-homepage" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 7 · journey: particles dissolve into a starfield -->
+  <section class="chapter journey" id="journey" data-scene="7" aria-labelledby="exp-h">
+    <h2 id="exp-h" class="big split">The journey so far</h2>
     <div class="timeline">
       <svg class="tl-line" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 2 100"><line x1="1" y1="0" x2="1" y2="100"/></svg>
-      <div class="role now">
-        <time>Sep 2026 - Present</time>
-        <h3>Web Developer Intern</h3>
-        <p class="org">Spotmies</p>
-        <p>Building production web interfaces with the Spotmies team.</p>
-      </div>
-      <div class="role">
-        <time>Apr 2025 - Jun 2025</time>
-        <h3>AWS Data Engineering Virtual Intern</h3>
-        <p class="org">EduSkills</p>
-        <p>ETL pipelines, cloud storage and data engineering fundamentals.</p>
-      </div>
-      <div class="role">
-        <time>Jul 2024</time>
-        <h3>Data Science Virtual Intern</h3>
-        <p class="org">Cognorise InfoTech</p>
-        <p>Machine learning for sales prediction, fraud detection and business analytics.</p>
-      </div>
-      <div class="role edu">
-        <time>2022 - 2026</time>
-        <h3>B.Tech, Computer Science (Data Science)</h3>
-        <p class="org">GITAM University, Visakhapatnam</p>
-      </div>
+      <div class="role now"><time>Sep 2026 - Present</time><h3>Web Developer Intern</h3><p class="org">Spotmies</p></div>
+      <div class="role"><time>Apr 2025 - Jun 2025</time><h3>AWS Data Engineering Virtual Intern</h3><p class="org">EduSkills</p><p>ETL pipelines, cloud storage and data engineering fundamentals.</p></div>
+      <div class="role"><time>Jul 2024</time><h3>Data Science Virtual Intern</h3><p class="org">Cognorise InfoTech</p><p>Machine learning for sales prediction, fraud detection and business analytics.</p></div>
+      <div class="role"><time>2022 - 2026</time><h3>B.Tech, Computer Science (Data Science)</h3><p class="org">GITAM University, Visakhapatnam</p></div>
     </div>
-  </section>
-
-  <!-- STACK: one marquee on the page -->
-  <section class="stack-band" aria-label="Tools I use">
-    <div class="marquee"><div class="mq-track">
-      <span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>pgvector</span><span>LangChain</span><span>Gemini</span><span>FAISS</span><span>FashionSigLIP</span><span>RAG</span><span>Next.js</span><span>React</span><span>TypeScript</span><span>Tailwind CSS</span><span>Docker</span><span>Alembic</span><span>Streamlit</span><span>Vercel</span>
+    <p class="also">Also built: <a href="https://github.com/Iqbalmeerajohn/emotion-recognition-speech" target="_blank" rel="noopener">Speech Emotion Recognition with Federated Learning</a>, 92%+ accuracy on RAVDESS, Top 30 of 350+ projects.</p>
+    <div class="marquee" aria-label="Tools I use"><div class="mq-track">
+      <span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>pgvector</span><span>LangChain</span><span>Gemini</span><span>FAISS</span><span>RAG</span><span>Next.js</span><span>React</span><span>TypeScript</span><span>Tailwind CSS</span><span>Docker</span><span>Three.js</span><span>GSAP</span><span>Vercel</span>
     </div></div>
   </section>
 
-  <!-- CONTACT -->
-  <section class="contact" id="contact" aria-labelledby="contact-h">
-    <h2 id="contact-h" class="split">Hiring, or need a website that works?</h2>
-    <p class="lede">Open to full-time AI and full-stack roles, and freelance web projects.</p>
-    <button class="email magnetic" type="button" data-email="iqbalmeerajohn1@gmail.com">
-      <span class="email-text">iqbalmeerajohn1@gmail.com</span>
-      <span class="email-tip" aria-live="polite">Click to copy</span>
-    </button>
-    <div class="socials">
-      <a href="https://www.linkedin.com/in/sheik-iqbal-meera-john-056191253/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Iqbalmeerajohn" target="_blank" rel="noopener">GitHub</a>
+  <!-- 8 · particles say hi -->
+  <section class="chapter contact" id="contact" data-scene="8" aria-labelledby="contact-h">
+    <div class="contact-inner">
+      <h2 id="contact-h" class="split">Hiring, or need a website that works?</h2>
+      <p class="lede">Open to full-time AI and full-stack roles, and freelance web projects.</p>
+      <button class="email magnetic" type="button" data-email="iqbalmeerajohn1@gmail.com">
+        <span class="email-text">iqbalmeerajohn1@gmail.com</span>
+        <span class="email-tip" aria-live="polite">Click to copy</span>
+      </button>
+      <div class="socials">
+        <a href="https://www.linkedin.com/in/sheik-iqbal-meera-john-056191253/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Iqbalmeerajohn" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/Iqbalmeerajohn/portfolio" target="_blank" rel="noopener">How this site works</a>
+      </div>
     </div>
+    <footer class="foot"><span>Sheik Iqbal Meera John</span><span>Three.js, GSAP and one custom shader. No templates.</span></footer>
   </section>
 </main>
-
-<footer class="foot">
-  <span>Sheik Iqbal Meera John</span>
-  <span>Built by hand, no templates.</span>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js"></script>
+<script type="module" src="main.js"></script>
 </body>
 </html>
