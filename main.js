@@ -61,7 +61,7 @@ $$('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
 /* =====================================================================
    PARTICLE SCENES (normalised: longest side = 1, centred)
    ===================================================================== */
-const N = [6000, 10000, 16000][TIER];
+const N = [9000, 14000, 24000][TIER];
 const PR_MAX = [1.25, 1.5, 1.75][TIER];
 document.querySelectorAll(".pcount").forEach(el => { el.textContent = N.toLocaleString("en-US"); });
 const hex = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
@@ -464,7 +464,7 @@ Promise.all([fontsReady, imgs]).then(([, [saree, kafa, chompy, me]]) => {
     ringScene(), blobScene(), mfccScene(),
     kafa ? imageScene(kafa, 240, (r, g, b, a) => a > .5 && lumOf(r, g, b) > .6, (r, g, b, ty) => mixc(O, O2, ty)) : textScene("KAFA"),
     chompy ? imageScene(chompy, 230, (r, g, b) => sat(r, g, b) > .4 && lumOf(r, g, b) > .22, boost) : textScene("CHOMPY"),
-    me ? imageScene(me, 300, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5) && !(g > r + .04 && g > b + .04), portraitColor, (x, y) => y < .52 ? 8 : (Math.random() < .5 ? 1 : 0), .035) : starScene(),
+    me ? imageScene(me, 300, (r, g, b, a) => a > .55 && !(b > r + .06 && lumOf(r, g, b) > .5) && !(g > r + .04 && g > b + .04), portraitColor, (x, y) => y < .52 ? 5 : 1, .035) : starScene(),
     textScene("SAY HI")
   ];
   resize();

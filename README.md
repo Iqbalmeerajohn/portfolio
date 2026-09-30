@@ -2,7 +2,7 @@
 
 Live: https://iqbalmeerajohn.github.io/portfolio/
 
-One Three.js particle system (16,000 points, 9,000 on phones) runs behind the whole page. As you scroll, a custom vertex shader bursts the points apart and re-forms them into each chapter:
+One Three.js particle system (24,000 points on laptops, 14,000 on tablets, 9,000 on phones) runs behind the whole page. As you scroll, a custom vertex shader bursts the points apart and re-forms them into each chapter:
 
 | Chapter | What the particles become | Source |
 |---|---|---|
