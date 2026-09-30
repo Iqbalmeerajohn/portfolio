@@ -20,12 +20,26 @@
 
 <!-- BOOT: counts real asset loading, then wipes away -->
 <div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-half boot-top"></div>
+  <div class="boot-half boot-bottom"></div>
   <div class="boot-inner">
-    <p class="boot-label">Indexing memories</p>
-    <p class="boot-count"><span id="bootNum">000</span></p>
-    <div class="boot-bar"><i id="bootBar"></i></div>
+    <div class="boot-left">
+      <p class="boot-label">Booting Iqbal.OS</p>
+      <p class="boot-count"><span id="bootNum">000</span></p>
+      <div class="boot-bar"><i id="bootBar"></i></div>
+    </div>
+    <ol class="boot-log" id="bootLog">
+      <li data-at="0.05">mounting memory engine</li>
+      <li data-at="0.22">indexing 1,059 saree embeddings</li>
+      <li data-at="0.42">arming policy gate</li>
+      <li data-at="0.6">loading 120 x 94 MFCC frames</li>
+      <li data-at="0.78">sampling logos into particles</li>
+      <li data-at="0.95">waking 16,000 particles</li>
+    </ol>
   </div>
 </div>
+<div class="shock" id="shock" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="progress"></i></div>
 
 <!-- One particle system behind the whole story -->
 <canvas id="gl" aria-hidden="true"></canvas>
@@ -37,6 +51,7 @@
   <nav aria-label="Primary">
     <a href="#work-saree">Work</a>
     <a href="#journey">Experience</a>
+    <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Ambient sound"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">Sound</span></button>
     <a href="#contact" class="nav-cta">Email me</a>
   </nav>
 </header>
@@ -48,10 +63,11 @@
   <a href="#work-saree" data-ch="2"><span>Saree agent</span></a>
   <a href="#work-salvage" data-ch="3"><span>SALVAGE</span></a>
   <a href="#work-gummy" data-ch="4"><span>GUMMY OS</span></a>
-  <a href="#work-kafa" data-ch="5"><span>KAFA</span></a>
-  <a href="#work-chompy" data-ch="6"><span>CHOMPY</span></a>
-  <a href="#journey" data-ch="7"><span>Journey</span></a>
-  <a href="#contact" data-ch="8"><span>Contact</span></a>
+  <a href="#work-voice" data-ch="5"><span>Speech AI</span></a>
+  <a href="#work-kafa" data-ch="6"><span>KAFA</span></a>
+  <a href="#work-chompy" data-ch="7"><span>CHOMPY</span></a>
+  <a href="#journey" data-ch="8"><span>Journey</span></a>
+  <a href="#contact" data-ch="9"><span>Contact</span></a>
 </nav>
 
 <main>
@@ -84,6 +100,7 @@
 
   <!-- 2 · Saree -->
   <section class="chapter work" id="work-saree" data-scene="2" data-side="left" aria-labelledby="saree-h">
+    <div class="ghost" aria-hidden="true">SAREE</div>
     <article class="panel">
       <p class="kicker scramble">AI agent · Computer vision</p>
       <h2 id="saree-h" class="split">Saree Visual Similarity Search</h2>
@@ -107,6 +124,7 @@
 
   <!-- 3 · SALVAGE -->
   <section class="chapter work" id="work-salvage" data-scene="3" data-side="right" aria-labelledby="salvage-h">
+    <div class="ghost" aria-hidden="true">SALVAGE</div>
     <article class="panel">
       <p class="kicker scramble">Agentic AI · Razorpay AI Builder Buildathon 2026</p>
       <h2 id="salvage-h" class="split">SALVAGE, the revenue recovery agent</h2>
@@ -125,6 +143,7 @@
 
   <!-- 4 · GUMMY OS -->
   <section class="chapter work" id="work-gummy" data-scene="4" data-side="left" aria-labelledby="gummy-h">
+    <div class="ghost" aria-hidden="true">GUMMY</div>
     <article class="panel">
       <p class="kicker scramble">Personal AI operating system</p>
       <h2 id="gummy-h" class="split">GUMMY OS</h2>
@@ -145,8 +164,39 @@
     </article>
   </section>
 
-  <!-- 5 · KAFA -->
-  <section class="chapter work" id="work-kafa" data-scene="5" data-side="right" aria-labelledby="kafa-h">
+  <!-- 5 · Speech emotion: the particles become the model's own input, a 120 x 94 MFCC grid -->
+  <section class="chapter work" id="work-voice" data-scene="5" data-side="right" aria-labelledby="voice-h">
+    <div class="ghost" aria-hidden="true">VOICE</div>
+    <article class="panel">
+      <p class="kicker scramble">Deep learning · Federated learning · Audio</p>
+      <h2 id="voice-h" class="split">Speech Emotion Recognition</h2>
+      <p>That rippling grid is 120 MFCC coefficients across 94 time frames, the exact shape the model reads. Multi-head attention classifies the emotion, trained with federated learning so raw audio never leaves its client.</p>
+      <div class="fed" aria-label="Federated learning: clients send only model weights to FedAvg, which sends back the global model">
+        <svg viewBox="0 0 320 150" role="img" aria-hidden="true">
+          <g class="fed-lines">
+            <path id="fl1" d="M40 30 C120 30 130 75 160 75"/><path id="fl2" d="M40 120 C120 120 130 75 160 75"/>
+            <path id="fl3" d="M280 30 C200 30 190 75 160 75"/><path id="fl4" d="M280 120 C200 120 190 75 160 75"/>
+          </g>
+          <g class="fed-pulses"><circle r="3.2"/><circle r="3.2"/><circle r="3.2"/><circle r="3.2"/></g>
+          <g class="fed-clients"><circle cx="40" cy="30" r="13"/><circle cx="40" cy="120" r="13"/><circle cx="280" cy="30" r="13"/><circle cx="280" cy="120" r="13"/></g>
+          <circle class="fed-core" cx="160" cy="75" r="22"/>
+          <text x="160" y="79" text-anchor="middle">FedAvg</text>
+        </svg>
+        <p class="fed-cap">Illustration: each client trains locally, only weights travel.</p>
+      </div>
+      <ul class="emotions" aria-label="The 8 emotions it classifies">
+        <li>Neutral</li><li>Calm</li><li>Happy</li><li>Sad</li><li>Angry</li><li>Fearful</li><li>Disgust</li><li>Surprised</li>
+      </ul>
+      <ul class="facts"><li><b>92%</b> on RAVDESS</li><li>Top <b>30</b> of ~<b>350</b> at GITAM</li><li>TensorFlow · FastAPI · Streamlit</li></ul>
+      <div class="links">
+        <a href="https://github.com/Iqbalmeerajohn/emotion-recognition-speech" target="_blank" rel="noopener">Code</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- 6 · KAFA -->
+  <section class="chapter work" id="work-kafa" data-scene="6" data-side="left" aria-labelledby="kafa-h">
+    <div class="ghost" aria-hidden="true">KAFA</div>
     <article class="panel">
       <p class="kicker scramble">Full-stack web</p>
       <h2 id="kafa-h" class="split">KAFA Cafe Digital Platform</h2>
@@ -160,8 +210,9 @@
     </article>
   </section>
 
-  <!-- 6 · CHOMPY -->
-  <section class="chapter work" id="work-chompy" data-scene="6" data-side="left" aria-labelledby="chompy-h">
+  <!-- 7 · CHOMPY -->
+  <section class="chapter work" id="work-chompy" data-scene="7" data-side="right" aria-labelledby="chompy-h">
+    <div class="ghost" aria-hidden="true">CHOMPY</div>
     <article class="panel">
       <p class="kicker scramble">Brand web design · Motion</p>
       <h2 id="chompy-h" class="split">CHOMPY</h2>
@@ -175,8 +226,8 @@
     </article>
   </section>
 
-  <!-- 7 · journey: particles dissolve into a starfield -->
-  <section class="chapter journey" id="journey" data-scene="7" aria-labelledby="exp-h">
+  <!-- 8 · journey: particles dissolve into a starfield -->
+  <section class="chapter journey" id="journey" data-scene="8" aria-labelledby="exp-h">
     <h2 id="exp-h" class="big split">The journey so far</h2>
     <div class="timeline">
       <svg class="tl-line" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 2 100"><line x1="1" y1="0" x2="1" y2="100"/></svg>
@@ -185,14 +236,13 @@
       <div class="role"><time>Jul 2024</time><h3>Data Science Virtual Intern</h3><p class="org">Cognorise InfoTech</p><p>Machine learning for sales prediction, fraud detection and business analytics.</p></div>
       <div class="role"><time>2022 - 2026</time><h3>B.Tech, Computer Science (Data Science)</h3><p class="org">GITAM University, Visakhapatnam</p></div>
     </div>
-    <p class="also">Also built: <a href="https://github.com/Iqbalmeerajohn/emotion-recognition-speech" target="_blank" rel="noopener">Speech Emotion Recognition with Federated Learning</a>, 92%+ accuracy on RAVDESS, Top 30 of 350+ projects.</p>
     <div class="marquee" aria-label="Tools I use"><div class="mq-track">
       <span>Python</span><span>FastAPI</span><span>PostgreSQL</span><span>pgvector</span><span>LangChain</span><span>Gemini</span><span>FAISS</span><span>RAG</span><span>Next.js</span><span>React</span><span>TypeScript</span><span>Tailwind CSS</span><span>Docker</span><span>Three.js</span><span>GSAP</span><span>Vercel</span>
     </div></div>
   </section>
 
-  <!-- 8 · particles say hi -->
-  <section class="chapter contact" id="contact" data-scene="8" aria-labelledby="contact-h">
+  <!-- 9 · particles say hi -->
+  <section class="chapter contact" id="contact" data-scene="9" aria-labelledby="contact-h">
     <div class="contact-inner">
       <h2 id="contact-h" class="split">Hiring, or need a website that works?</h2>
       <p class="lede">Open to full-time AI and full-stack roles, and freelance web projects.</p>
@@ -206,7 +256,7 @@
         <a href="https://github.com/Iqbalmeerajohn/portfolio" target="_blank" rel="noopener">How this site works</a>
       </div>
     </div>
-    <footer class="foot"><span>Sheik Iqbal Meera John</span><span>Three.js, GSAP and one custom shader. No templates.</span></footer>
+    <footer class="foot"><span>Sheik Iqbal Meera John</span><span>Three.js, GSAP, WebAudio and two custom shaders. No templates.</span></footer>
   </section>
 </main>
 

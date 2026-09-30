@@ -11,12 +11,15 @@ One Three.js particle system (16,000 points, 9,000 on phones) runs behind the wh
 | Saree agent | a real saree from the project's catalogue | pixels sampled from the image, depth from luminance |
 | SALVAGE | the 9-stage decision loop, policy gate in gold | procedural ring |
 | GUMMY OS | the green orb from its landing page | noise-displaced sphere |
+| Speech Emotion Recognition | a live 120 x 94 MFCC grid, the model's real input shape, rippling like audio | grid + height wave in the shader |
 | KAFA | KAFA's raccoon logo | pixels sampled from the logo |
 | CHOMPY | the gummy bear hero art | saturation-filtered screenshot |
 | Journey | a drifting starfield | random volume |
 | Contact | SAY HI | text |
 
 How it works: each particle carries two target positions and colours (`pA/pB`, `cA/cB`). Scroll position picks the pair and a blend `uT`. Each particle has its own delay and burst direction, so shapes explode and re-form instead of crossfading.
+
+Also: a fullscreen nebula shader tinted per chapter, far dust with scroll parallax, a boot log tied to real asset loading, and an optional ambient pad synthesized with WebAudio (off until you turn it on).
 
 Stack: Three.js, GSAP + ScrollTrigger, Lenis, vanilla JS. No build step. Respects `prefers-reduced-motion`.
 
